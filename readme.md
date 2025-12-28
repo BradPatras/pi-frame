@@ -4,7 +4,7 @@ This repo contains a project to create a custom offline digital picture frame us
 
 ### Why Offline?
 
-I think it's annoying when you get a smart device and have to go through a process of connecting it to your home wifi in order to use it. Beyond it being annoying, it also means there's yet another device polluting your wifi, creating another entry point for malicious actors and potentially introducing the need for a paid service of some kind.
+I think it's annoying when you get a smart device and have to go through a process of connecting it to your home wifi in order to use it. Beyond it being annoying, it also means there's yet another device polluting your wifi, another entry point for malicious actors and potentially it may introduce the need for a paid service of some kind.
 
 ### How Will I Add Photos?
 
