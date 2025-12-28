@@ -10,7 +10,7 @@ I think it's annoying when you get a smart device and have to go through a proce
 
 This is how I imagine the user adding photos:
 
-1. Click a "config" button on the frame
+1. Click a physical "config" button on the frame
     - This will put the frame into "configuration mode"
 2. The frame will start up it's own wifi network and the screen show the wifi network name/password, "PI-FRAME", "SOME PASSWORD"
 3. A QR code will appear on the frame's screen that will link to a web-page being locally hosted by the frame. This webpage will let the user manage the photos on the frame.
