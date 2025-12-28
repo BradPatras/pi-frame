@@ -17,6 +17,27 @@ This is how I imagine the user adding photos:
 4. After the frame's wifi network has no connections for a certain time period, it will disable the wifi network, returning to its simple image displaying-mode.
 
 
+## Hardware
+
+### Board
+- Raspberry pi zero w
+  - I could definitely get away with using a microcontroller instead of an SBC but I'm mostly worried about the web server/image uploading step and I know a rpi will have the power to do it.
+
+### Display
+Could go with gpio pased display or hdmi.
+(hdmi seems simpler since raspberry pi has the port)
+
+- The random display I bought from amazon for dev:
+ - 7 inch hdmi-based ips: https://a.co/d/9zcXfZG
+    - $34.99
+- Waveshare has tons of options: 
+  - 7 inch gpio-based ips: https://www.waveshare.com/7inch-lcd-for-pi.htm
+    - $29.99
+  - 7 inch hdmi-based ips: https://www.waveshare.com/product/7inch-hdmi-lcd.htm
+    - $43.99
+  - 7 inch hdmi-based (via converter board) ips: https://www.waveshare.com/70h-1024600.htm?sku=22672
+    - $33.99 with (converter board included)
+
 ## Dev notes
 
 [Headless pi with dispaly output](https://raspberrypi.stackexchange.com/questions/99096/sending-from-headless-raspi-to-hdmi-screen)
