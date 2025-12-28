@@ -14,7 +14,7 @@ This is how I imagine the user adding photos:
     - This will put the frame into "configuration mode"
 2. The frame will start up it's own wifi network and the screen show the wifi network name/password, "PI-FRAME", "SOME PASSWORD"
 3. A QR code will appear on the frame's screen that will link to a web-page being locally hosted by the frame. This webpage will let the user manage the photos on the frame.
-4. After the frame's wifi network has no connections for a certain time period, it will disable the wifi network, returning to its simple image displaying-mode.
+4. After the frame's wifi network has no connections for a certain time period, it will disable the wifi network, returning to its simple image displaying-mode. (Pressing the config button again will also return to picture mode)
 
 
 ## Hardware
