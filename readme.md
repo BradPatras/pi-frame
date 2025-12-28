@@ -28,7 +28,7 @@ Could go with gpio pased display or hdmi.
 (hdmi seems simpler since raspberry pi has the port)
 
 - The random display I bought from amazon for dev:
- - 7 inch hdmi-based ips: https://a.co/d/9zcXfZG
+  - 7 inch hdmi-based ips: https://a.co/d/9zcXfZG
     - $34.99
 - Waveshare has tons of options: 
   - 7 inch gpio-based ips: https://www.waveshare.com/7inch-lcd-for-pi.htm
