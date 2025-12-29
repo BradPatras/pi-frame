@@ -40,4 +40,16 @@ Could go with gpio pased display or hdmi.
 
 ## Dev notes
 
-[Headless pi with dispaly output](https://raspberrypi.stackexchange.com/questions/99096/sending-from-headless-raspi-to-hdmi-screen)
+[Headless pi with display output](https://raspberrypi.stackexchange.com/questions/99096/sending-from-headless-raspi-to-hdmi-screen)
+[Installing basics required to push stuff to a display without a desktop environment](https://raspberrypi.stackexchange.com/a/66594)
+
+
+### The web server
+This is where i'm most fuzzy on what's required.
+
+The "Backend" responsibilities are:
+1. Fetch/Remove/Add images to/from pi's local filesystem
+2. Generate static image content for the frame's display
+  - Images from local storage
+  - The configuration screen displaying network id/password and QR code that links to the client page
+3. 
