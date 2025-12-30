@@ -70,6 +70,13 @@ This interface is shown when the frame's physical config button is pressed and c
 
 This interface is broadcast on the frame's local wifi network and allows modifying the frame's photo contents. The user would use their phone's web browser to access this interface.
 
+## To do
+- [ ] Configuration interface
+- [ ] Upload endpoint on server
+- [ ] Image resizing before save
+- [ ] Autostart script upon boot
+- [ ] Switch back to headless mode
+
 ## Logs
 
 #### 12/30/25
@@ -83,6 +90,14 @@ for more information.
 Not to mention, many discussions online discuss how a basic web browser needs at least a gigabyte of ram to function. The pi zero has only 512mb of ram. 
 
 So with that in mind I'm pivoting to just use python directly to display the fullscreen images. In hindsight using a browser for the image display is massive overkill.
+
+pushing stuff to the display has proved tricky over ssh because it always assumes you're trying to push stuff to the ssh client's display instead of the one plugged into the pi.
+
+I've got it working with tkinter (had to do `export DISPLAY=:0` first) but the photo transitions are kinda rough.
+
+Next I tried using pygame and it seems to be a lot more predictable and smooth. I had to run it with the same display trick, `DISPLAY=:0 python ...` to get anything to appear on the screen, probably because i'm running from ssh.
+
+Pygame seems to work better without any glitchiness when transitioning between images. The next problem to tackle is improving the loading time. The test images i'm using are pretty massive and it takes an extra few seconds to swap between photos because it has to load the next image and scale it down to the display size. I think it'd make the most sense if the server scaled the images as part of the upload process so that when they are saved into the pi's storage, they are already scaled perfectly to fit the display.
 
 #### 12/29/25
 I got the initial slideshow of images working using a simple webpage served by a python Flask server.
