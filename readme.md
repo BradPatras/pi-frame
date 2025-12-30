@@ -75,7 +75,7 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 - [ ] Upload endpoint on server
 - [ ] Image resizing before save
 - [ ] Autostart script upon boot
-- [ ] Switch back to headless mode
+- [ ] Switch back to headless mode (use openbox?)
 
 ## Logs
 
