@@ -57,11 +57,11 @@ gunicorn -w 2 -b 0.0.0.0:8000 server:app
 
 This interface occupies the whole frame display and shows the images one by one, switching between them according to a set time interval (8 hours, for example).
 
-This interface can be completely local to the pi.
+This interface can be completely local to the pi. (Doesn't need to be a webpage)
 
 #### Configuration portal (on frame)
 
-This interface is shown when the frame's physical config button in pressed and contains the following info:
+This interface is shown when the frame's physical config button is pressed and contains the following info:
 
 - The frame's wifi network name/password
 - The configuration interface web address (could be served up as a QR code alongside the actual address)
@@ -69,3 +69,20 @@ This interface is shown when the frame's physical config button in pressed and c
 #### Configuration interface (on user device)
 
 This interface is broadcast on the frame's local wifi network and allows modifying the frame's photo contents. The user would use their phone's web browser to access this interface.
+
+## Logs
+
+#### 12/30/25
+Originally all of the interfaces were going to just be web pages and yesterday I even got the basic image slideshow working. The issue came when I attempted to run that webpage on the pi zero.  Apparently the more recent versions of chromium or rasbian have removed this functionality. Attempting to run anything with chromium gets you this message:
+
+> The hardware on this system lacks support for NEON SIMD extensions.
+We now require NEON or equivalent architecture extensions on ARM-based
+machines. See https://lists.debian.org/debian-devel/2023/09/msg00175.html
+for more information.
+
+Not to mention, many discussions online discuss how a basic web browser needs at least a gigabyte of ram to function. The pi zero has only 512mb of ram. 
+
+So with that in mind I'm pivoting to just use python directly to display the fullscreen images. In hindsight using a browser for the image display is massive overkill.
+
+#### 12/29/25
+I got the initial slideshow of images working using a simple webpage served by a python Flask server.
