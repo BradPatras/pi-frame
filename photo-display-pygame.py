@@ -9,8 +9,13 @@ import time
 # Initialize pygame
 pygame.init()
 
+# Get the script's directory for relative paths
+script_dir = os.path.dirname(os.path.abspath(__file__))
+print(f"Script directory: {script_dir}")
+
 # Get image files
-images_folder = os.path.join("static", "images")
+images_folder = os.path.join(script_dir, "static", "images")
+print(f"Looking for images in: {images_folder}")
 image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
 image_files = []
 for ext in image_extensions:
@@ -18,6 +23,9 @@ for ext in image_extensions:
 
 if not image_files:
     print(f"No images found in {images_folder}")
+    print(f"Directory exists: {os.path.exists(images_folder)}")
+    if os.path.exists(images_folder):
+        print(f"Directory contents: {os.listdir(images_folder)}")
     exit()
 
 print(f"Found {len(image_files)} images")
@@ -40,7 +48,7 @@ print("Display setup complete")
 
 def get_interval():
     return 3  # 3 seconds for testing
-    config_path = "static/config.yml"
+    config_path = os.path.join(script_dir, "static", "config.yml")
     if os.path.exists(config_path):
         try:
             with open(config_path, "r") as f:

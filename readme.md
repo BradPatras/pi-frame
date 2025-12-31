@@ -99,5 +99,14 @@ Next I tried using pygame and it seems to be a lot more predictable and smooth. 
 
 Pygame seems to work better without any glitchiness when transitioning between images. The next problem to tackle is improving the loading time. The test images i'm using are pretty massive and it takes an extra few seconds to swap between photos because it has to load the next image and scale it down to the display size. I think it'd make the most sense if the server scaled the images as part of the upload process so that when they are saved into the pi's storage, they are already scaled perfectly to fit the display.
 
+Autostart took a bunch of tries because testing reboots is really slow. Initially I was using a crontab job but the script wouldn't work unless the desktop was already loaded so I switched to using a systemd service. This is nice because it only starts after the desktop gui is ready and it'll auto-restart if the script crashes.
+
+```
+sudo cp /home/bread/frame/photo-display.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable photo-display.service
+sudo systemctl start photo-display.service
+```
+
 #### 12/29/25
 I got the initial slideshow of images working using a simple webpage served by a python Flask server.

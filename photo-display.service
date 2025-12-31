@@ -1,0 +1,17 @@
+[Unit]
+Description=Photo Display Frame with Openbox
+After=multi-user.target
+
+[Service]
+Type=simple
+User=bread
+Environment=DISPLAY=:0
+WorkingDirectory=/home/bread/frame
+ExecStart=/usr/bin/startx /home/bread/frame/start-frame.sh -- :0 vt1
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/home/bread/frame/photo-display.log
+StandardError=append:/home/bread/frame/photo-display.log
+
+[Install]
+WantedBy=multi-user.target
