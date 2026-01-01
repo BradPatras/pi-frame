@@ -52,7 +52,7 @@ def get_interval():
         try:
             with open(config_path, "r") as f:
                 config = yaml.safe_load(f)
-                interval_hrs = config.get("image_interval_hrs", 8)
+                interval_hrs = config.get("image_interval_hrs", 2)
                 return interval_hrs * 60 * 60  # Return in seconds
         except:
             pass
