@@ -105,6 +105,9 @@ Autostart took a bunch of tries because testing reboots is really slow. Initiall
 
 I'm now starting the process of switching to headless mode using openbox to create the display window for the pygame to run inside.
 
+Reimaged the pi with the lite os and i'm not sure it's worth it to use lite and then install all the graphical stuff anyway. It might be easier to use the full os and just set it boot to command line...
+
+
 ```
 sudo cp /home/bread/frame/photo-display.service /etc/systemd/system/
 sudo systemctl daemon-reload
