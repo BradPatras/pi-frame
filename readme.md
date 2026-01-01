@@ -75,6 +75,7 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 - [ ] Configuration interface
 - [ ] Upload endpoint on server
 - [ ] Image resizing before save
+- [ ] Custom startup screen (maybe the server will auto-set a random image as the splash screen when photos are added?)
 - [x] Autostart script upon boot
 - [x] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
