@@ -4,7 +4,7 @@ Image Scaler - Resize all images in a directory to fit within a bounding box
 while maintaining aspect ratio.
 """
 
-from PIL import Image
+from PIL import Image, ImageOps
 import os
 import glob
 import argparse
@@ -22,6 +22,9 @@ def scale_image(input_path, output_path, max_width, max_height):
     """
     try:
         img = Image.open(input_path)
+
+        # Apply EXIF orientation to fix rotation
+        img = ImageOps.exif_transpose(img)
 
         # Convert RGBA to RGB if needed (for JPEG compatibility)
         if img.mode == "RGBA":

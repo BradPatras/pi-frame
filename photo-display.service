@@ -9,7 +9,7 @@ Environment=DISPLAY=:0
 WorkingDirectory=/home/bread/pi-frame
 ExecStart=/home/bread/pi-frame/start-frame.sh -- :0 vt1
 Restart=on-failure
-RestartSec=10
+RestartSec=5
 StandardOutput=append:/home/bread/pi-frame/photo-display.log
 StandardError=append:/home/bread/pi-frame/photo-display.log
 

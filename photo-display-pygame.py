@@ -47,7 +47,6 @@ print("Display setup complete")
 
 
 def get_interval():
-    return 3  # 3 seconds for testing
     config_path = os.path.join(script_dir, "static", "config.yml")
     if os.path.exists(config_path):
         try:
@@ -57,7 +56,7 @@ def get_interval():
                 return interval_hrs * 60 * 60  # Return in seconds
         except:
             pass
-    return 8 * 60 * 60  # Default to 8 hours in seconds
+    return 2 * 60 * 60  # Default to 2 hours in seconds
 
 
 def load_and_scale_image(image_path):
