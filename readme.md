@@ -80,6 +80,20 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 
 ## Logs
 
+#### 1/1/26
+
+Happy new year!
+
+I went ahead with using the full raspi os just set to boot to command line and it worked using the updated service! The script runs on startup and the photos fill the whole display.
+
+
+#### 12/31/25
+
+I'm now starting the process of switching to headless mode using openbox to create the display window for the pygame to run inside.
+
+Reimaged the pi with the lite os and i'm not sure it's worth it to use lite and then install all the graphical stuff anyway. It might be easier to use the full os and just set it boot to command line...
+
+
 #### 12/30/25
 
 Originally all of the interfaces were going to just be web pages and yesterday I even got the basic image slideshow working. The issue came when I attempted to run that webpage on the pi zero. Apparently the more recent versions of chromium or rasbian have removed this functionality. Attempting to run anything with chromium gets you this message:
@@ -102,11 +116,6 @@ Next I tried using pygame and it seems to be a lot more predictable and smooth. 
 Pygame seems to work better without any glitchiness when transitioning between images. The next problem to tackle is improving the loading time. The test images i'm using are pretty massive and it takes an extra few seconds to swap between photos because it has to load the next image and scale it down to the display size. I think it'd make the most sense if the server scaled the images as part of the upload process so that when they are saved into the pi's storage, they are already scaled perfectly to fit the display.
 
 Autostart took a bunch of tries because testing reboots is really slow. Initially I was using a crontab job but the script wouldn't work unless the desktop was already loaded so I switched to using a systemd service. This is nice because it only starts after the desktop gui is ready and it'll auto-restart if the script crashes.
-
-I'm now starting the process of switching to headless mode using openbox to create the display window for the pygame to run inside.
-
-Reimaged the pi with the lite os and i'm not sure it's worth it to use lite and then install all the graphical stuff anyway. It might be easier to use the full os and just set it boot to command line...
-
 
 ```
 sudo cp /home/bread/frame/photo-display.service /etc/systemd/system/
