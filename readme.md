@@ -76,7 +76,7 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 - [ ] Upload endpoint on server
 - [ ] Image resizing before save
 - [x] Autostart script upon boot
-- [ ] Switch back to headless mode (use openbox?)
+- [x] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
 ## Logs
 
@@ -86,13 +86,11 @@ Happy new year!
 
 I went ahead with using the full raspi os just set to boot to command line and it worked using the updated service! The script runs on startup and the photos fill the whole display.
 
-
 #### 12/31/25
 
 I'm now starting the process of switching to headless mode using openbox to create the display window for the pygame to run inside.
 
 Reimaged the pi with the lite os and i'm not sure it's worth it to use lite and then install all the graphical stuff anyway. It might be easier to use the full os and just set it boot to command line...
-
 
 #### 12/30/25
 
