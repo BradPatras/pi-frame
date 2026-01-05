@@ -81,6 +81,12 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 
 ## Logs
 
+#### 1/5/26
+
+After having the frame running for a few days I am noticing that this frame has a blue tint to it. I can modify the images to counteract that using PIL: https://stackoverflow.com/questions/11884544/setting-color-temperature-for-a-given-image-like-in-photoshop
+
+Could be another adjustment on the confg screen "Display color temperature"
+
 #### 1/1/26
 
 Happy new year!
