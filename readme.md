@@ -70,6 +70,13 @@ This interface is shown when the frame's physical config button is pressed and c
 
 This interface is broadcast on the frame's local wifi network and allows modifying the frame's photo contents. The user would use their phone's web browser to access this interface.
 
+Consists following components:
+- Inverval adjustment (integer input and dropdown for minutes/hours)
+- List of photos currently on-device
+  - Each photo should show a small thumbnail, the title, and a trash icon to remove it
+- An "Add Photos" button
+
+
 ## To do
 
 - [ ] Configuration interface
