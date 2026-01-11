@@ -94,6 +94,8 @@ After having the frame running for a few days I am noticing that this frame has 
 
 Could be another adjustment on the confg screen "Display color temperature"
 
+Started working on the configuration interface. I'm going with a react app currently (the backend will remain in python though)
+
 #### 1/1/26
 
 Happy new year!
