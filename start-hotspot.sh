@@ -1,0 +1,1 @@
+nmcli radio wifi on && nmcli device wifi hotspot ssid "pi-frame" password "some password"
