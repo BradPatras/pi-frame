@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 function App() {
   const [refreshInterval, setRefreshInterval] = useState('8');
   const [timeUnit, setTimeUnit] = useState('hours');
+  const [colorTemp, setColorTemp] = useState('');
 
   useEffect(() => {
     // Fetch config from API
@@ -13,12 +14,14 @@ function App() {
       .then(data => {
         setRefreshInterval(data.refreshInterval || '8');
         setTimeUnit(data.timeUnit || 'hours');
+        setColorTemp(data.colorTemp || '');
       })
       .catch(error => {
         console.error('Error fetching config:', error);
         // Set defaults on error
         setRefreshInterval('8');
         setTimeUnit('hours');
+        setColorTemp('');
       });
   }, []);
 
@@ -50,6 +53,19 @@ function App() {
               <option value="hours">hours</option>
               <option value="minutes">minutes</option>
             </select>
+          </div>
+        </label>
+        <label>
+          <span>Color Temperature:</span>
+          <div className="input-group">
+            <input
+              type="number"
+              id="colorTemp"
+              name="colorTemp"
+              placeholder="1000 - 10,000 K. Leave blank for display default."
+              value={colorTemp}
+              onChange={(e) => setColorTemp(e.target.value)}
+            />
           </div>
         </label>
       </div>

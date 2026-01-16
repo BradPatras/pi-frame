@@ -57,7 +57,9 @@ gunicorn -w 2 -b 0.0.0.0:8000 server:app
 
 This interface occupies the whole frame display and shows the images one by one, switching between them according to a set time interval (8 hours, for example).
 
-This interface can be completely local to the pi. (Doesn't need to be a webpage)
+This interface is completely local to the pi.
+
+**implementation**: [`frame-interface/photo_display.py`](frame-interface/photo_display.py)
 
 #### Configuration portal (on frame)
 
@@ -65,6 +67,8 @@ This interface is shown when the frame's physical config button is pressed and c
 
 - The frame's wifi network name/password
 - The configuration interface web address (could be served up as a QR code alongside the actual address)
+
+**implementation**: [`frame-interface/display_config.py`](frame-interface/display_config.py)
 
 #### Configuration interface (on user device)
 
@@ -76,6 +80,10 @@ Consists following components:
 - List of photos currently on-device
   - Each photo should show a small thumbnail, the title, and a trash icon to remove it
 - An "Add Photos" button
+
+__Backend implementation__: [`config-interface-backend/server.py`](config-interface-backend/server.py)
+
+__Frontend implementation__: [`config-interface-frontend/`](config-interface-frontend/)
 
 ## To do
 
