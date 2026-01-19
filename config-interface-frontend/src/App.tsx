@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Uploady, { useItemProgressListener } from "@rpldy/uploady";
-import UploadButton from "@rpldy/upload-button";
+import { asUploadButton } from "@rpldy/upload-button";
 import * as S from "./App.styles";
 
 function App() {
@@ -33,6 +33,14 @@ function App() {
     });
     return null;
   };
+
+  const UploadButton = asUploadButton(
+    (props: React.ComponentProps<"button">) => {
+      return (
+        <S.StyledUploadButton {...props}>Upload Images</S.StyledUploadButton>
+      );
+    },
+  );
 
   return (
     <S.AppContainer>
@@ -79,7 +87,7 @@ function App() {
         <S.UploadSection>
           <Uploady destination={{ url: "https://my-server/upload" }}>
             <LogProgress />
-            <S.StyledUploadButton>Upload Images</S.StyledUploadButton>
+            <UploadButton />
           </Uploady>
         </S.UploadSection>
       </S.Content>
