@@ -96,6 +96,10 @@ __Frontend implementation__: [`config-interface-frontend/`](config-interface-fro
 
 ## Logs
 
+#### 1/22/26
+
+A lot of the pieces are figured out but I haven't put much thought into how to tie them together. Currently the frame's two "modes" are split into two different python scripts, but that my end up just making things more complicated than they need to be. I think I should either merge them into a single file, or update the python files to be function call-based instead of just a one-shot scripts.
+
 #### 1/12/26
 
 I worked out what the hotspot setup will take. The `network.py` file contains all the info.

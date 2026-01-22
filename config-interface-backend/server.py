@@ -3,7 +3,6 @@ from flask import Flask, jsonify, send_from_directory
 import os
 import yaml
 
-
 app = Flask(__name__)
 
 @app.route('/<path:path>')
@@ -38,4 +37,3 @@ if __name__ == '__main__':
     print("Development server running at http://localhost:8000/")
     print("For production, use gunicorn instead of Flask's dev server")
     app.run(host='0.0.0.0', port=8000, debug=True)
-
