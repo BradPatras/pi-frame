@@ -81,9 +81,9 @@ Consists following components:
   - Each photo should show a small thumbnail, the title, and a trash icon to remove it
 - An "Add Photos" button
 
-__Backend implementation__: [`config-interface-backend/server.py`](config-interface-backend/server.py)
+**Backend implementation**: [`config-interface-backend/server.py`](config-interface-backend/server.py)
 
-__Frontend implementation__: [`config-interface-frontend/`](config-interface-frontend/)
+**Frontend implementation**: [`config-interface-frontend/`](config-interface-frontend/)
 
 ## To do
 
@@ -95,6 +95,12 @@ __Frontend implementation__: [`config-interface-frontend/`](config-interface-fro
 - [x] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
 ## Logs
+
+#### 1/29/26
+
+(i'm a dad now)
+
+The frame interface script is now consolidated and also structured as a python class because apparently that's a more idomatic way of doing things. Having functions and raw script in a python file means that if another python file were to attempt to import any of those functions, the file's base level script would auto-run at the import step.
 
 #### 1/22/26
 
