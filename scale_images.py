@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Image Scaler - Resize all images in a directory to fit within a bounding box
+Image Scaler Utility Script - Resize all images in a directory to fit within a bounding box
 while maintaining aspect ratio.
 """
 

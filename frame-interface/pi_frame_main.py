@@ -139,10 +139,16 @@ class PhotoFrame:
 
         # TODO: start local wifi hotspot
 
-        # TODO: start local web server (config_interface-backend/server.py), get server local address
+        # TODO: start flask server (config_interface-backend/server.py), get server local address
+        # gunicorn -w 2 -b 0.0.0.0:8000 server:app
+
+        # TODO: start react app (config_interface-frontend)
+        # vite dev --host (? or build and serve statically? vite build && vite preview (or host using python?)) https://vite.dev/guide/static-deploy
 
         # Generate QR code with current config webpage info
-        qr_data = "test-config-page-url" # TODO: plug in server local address from above
+        qr_data = (
+            "test-config-page-url"  # TODO: plug in server local address from above
+        )
         qr_output_path = os.path.join(self.script_dir, "qr_code.png")
         generate_qr_code(data=qr_data, output_file=qr_output_path)
         qr_img = pygame.image.load(qr_output_path)

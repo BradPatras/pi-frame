@@ -102,6 +102,8 @@ Consists following components:
 
 The frame interface script is now consolidated and also structured as a python class because apparently that's a more idomatic way of doing things. Having functions and raw script in a python file means that if another python file were to attempt to import any of those functions, the file's base level script would auto-run at the import step.
 
+The main py script still needs to be updated to startup the backend and frontend
+
 #### 1/22/26
 
 A lot of the pieces are figured out but I haven't put much thought into how to tie them together. Currently the frame's two "modes" are split into two different python scripts, but that my end up just making things more complicated than they need to be. I think I should either merge them into a single file, or update the python files to be function call-based instead of just a one-shot scripts.
