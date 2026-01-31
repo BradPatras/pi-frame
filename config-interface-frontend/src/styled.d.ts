@@ -8,6 +8,7 @@ declare module "styled-components" {
       background: string;
       cardBackground: string;
       text: string;
+      textSecondary: string;
     };
     spacing: {
       small: string;
@@ -26,6 +27,7 @@ declare module "styled-components" {
     fontSizes: {
       base: string;
       large: string;
+      small: string;
     };
     shadows: {
       light: string;

@@ -1,2 +1,3 @@
-image_interval_hrs: 2
-color_temp: null
+color_temperature: ""
+image_interval: 2
+image_interval_unit: hours

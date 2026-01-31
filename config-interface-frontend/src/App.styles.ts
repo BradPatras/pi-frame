@@ -60,6 +60,18 @@ export const Label = styled.label`
   }
 `;
 
+export const Subtitle = styled.p`
+  margin: -${({ theme }) => theme.spacing.medium} 0
+    ${({ theme }) => theme.spacing.large} 0;
+  padding: 0 25px;
+  text-align: right;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  color: ${({ theme }) =>
+    theme.colors.textSecondary || "rgba(255, 255, 255, 0.6)"};
+  font-style: italic;
+  line-height: 1.4;
+`;
+
 export const InputGroup = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.small};

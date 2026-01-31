@@ -8,9 +8,49 @@ function App() {
   const [timeUnit, setTimeUnit] = useState("hours");
   const [colorTemp, setColorTemp] = useState("");
 
+  // backend url is hosted on port 7100 of the same hostname as the frontend
+  const baseUrl = `http://${window.location.hostname}:7100`;
+
+  const updateConfig = (
+    refreshInterval: string,
+    timeUnit: string,
+    colorTemp: string,
+  ) => {
+    console.log("Updating config:", {
+      refreshInterval,
+      timeUnit,
+      colorTemp,
+    });
+    // Update config via API
+    fetch(`${baseUrl}/api/config`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshInterval,
+        timeUnit,
+        colorTemp,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Config updated successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error updating config:", error);
+      });
+  };
+
   useEffect(() => {
+    console.log(`Fetching config from ${baseUrl}/api/config`);
     // Fetch config from API
-    fetch("/api/config")
+    fetch(`${baseUrl}/api/config`)
       .then((response) => response.json())
       .then((data) => {
         setRefreshInterval(data.refreshInterval || "8");
@@ -57,13 +97,19 @@ function App() {
               id="refreshInterval"
               name="refreshInterval"
               value={refreshInterval}
-              onChange={(e) => setRefreshInterval(e.target.value)}
+              onChange={(e) => {
+                setRefreshInterval(e.target.value);
+                updateConfig(e.target.value, timeUnit, colorTemp);
+              }}
             />
             <S.Select
               id="timeUnit"
               name="timeUnit"
               value={timeUnit}
-              onChange={(e) => setTimeUnit(e.target.value)}
+              onChange={(e) => {
+                setTimeUnit(e.target.value);
+                updateConfig(refreshInterval, e.target.value, colorTemp);
+              }}
             >
               <option value="hours">hours</option>
               <option value="minutes">minutes</option>
@@ -79,10 +125,17 @@ function App() {
               name="colorTemp"
               placeholder="1000 - 10,000"
               value={colorTemp}
-              onChange={(e) => setColorTemp(e.target.value)}
+              onChange={(e) => {
+                console.log("Color Temp changed to:", e.target.value);
+                setColorTemp(e.target.value);
+                updateConfig(refreshInterval, timeUnit, e.target.value);
+              }}
             />
           </S.InputGroup>
         </S.Label>
+        <S.Subtitle>
+          Leave empty to use the display's default setting.
+        </S.Subtitle>
 
         <S.UploadSection>
           <Uploady destination={{ url: "https://my-server/upload" }}>

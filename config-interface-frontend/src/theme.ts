@@ -5,6 +5,7 @@ export const theme = {
     background: "#1a1d23",
     cardBackground: "#282c34",
     text: "white",
+    textSecondary: "rgba(222, 222, 222, 1)",
   },
   spacing: {
     small: "8px",
@@ -23,6 +24,7 @@ export const theme = {
   fontSizes: {
     base: "1.1rem",
     large: "1.8rem",
+    small: "0.9rem",
   },
   shadows: {
     light: "0 2px 8px rgba(0, 0, 0, 0.2)",

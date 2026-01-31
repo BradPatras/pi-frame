@@ -9,6 +9,8 @@ import glob
 import yaml
 import RPi.GPIO as GPIO
 from generate_qr import generate_qr_code
+import subprocess
+
 
 # Constants
 CONFIG_BUTTON_GPIO = 16
@@ -107,6 +109,9 @@ class PhotoFrame:
     def setup_photo_display(self):
         print(f"Script directory: {self.script_dir}")
 
+        # Stop local wifi hotspot
+        subprocess.run(["../stop_hotspot.sh"], cwd=self.script_dir)
+
         # Get image files
         images_folder = os.path.join(self.script_dir, "static", "images")
         print(f"Looking for images in: {images_folder}")
@@ -138,6 +143,7 @@ class PhotoFrame:
         print(f"Script directory: {self.script_dir}")
 
         # TODO: start local wifi hotspot
+        subprocess.run(["../start_hotspot.sh"], cwd=self.script_dir)
 
         # TODO: start flask server (config_interface-backend/server.py), get server local address
         # gunicorn -w 2 -b 0.0.0.0:8000 server:app
@@ -214,7 +220,7 @@ class PhotoFrame:
 
     def render_display_screen(self, clock):
         # Check if it's time to change image
-        interval = self.get_interval()
+        interval = self.get_interval_seconds()
         if time.time() - self.last_change >= interval:
 
             self.image_index += 1
@@ -248,14 +254,18 @@ class PhotoFrame:
             )
             self.screen.blit(self.current_surface, img_rect)
 
-    def get_interval(self):
+    def get_interval_seconds(self):
         config_path = os.path.join(self.script_dir, "static", "config.yml")
         if os.path.exists(config_path):
             try:
                 with open(config_path, "r") as f:
                     config = yaml.safe_load(f)
-                    interval_hrs = config.get("image_interval_hrs", 2)
-                    return interval_hrs * 60 * 60  # Return in seconds
+                    interval = config.get("image_interval", 2)
+                    interval_unit = config.get("image_interval_unit", "hours")
+                    if interval_unit == "minutes":
+                        return interval * 60
+                    else:  # assume hours
+                        return interval * 60 * 60
             except:
                 pass
         return 2 * 60 * 60  # Default to 2 hours in seconds
