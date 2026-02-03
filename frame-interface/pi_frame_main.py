@@ -10,6 +10,8 @@ import yaml
 import RPi.GPIO as GPIO
 from generate_qr import generate_qr_code
 import subprocess
+import socket
+from image_utils import load_and_scale_image, adjust_image_temp
 
 
 # Constants
@@ -34,10 +36,13 @@ class PhotoFrame:
         self.current_surface = None
         self.next_surface = None
         self.image_files = []
+        self.refresh_interval = self.get_interval_seconds()
+        self.color_adjustment = self.get_color_adjustment()
 
         # Config display state
         self.scaled_qr_img = None
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.ip_address = None
 
     def config_button_pressed_callback(self, channel):
         self.config_button_pressed = True
@@ -117,6 +122,9 @@ class PhotoFrame:
         print(f"Looking for images in: {images_folder}")
         image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
         self.image_files = []
+
+        self.refresh_interval = self.get_interval_seconds()
+
         for ext in image_extensions:
             self.image_files.extend(glob.glob(os.path.join(images_folder, ext)))
 
@@ -142,19 +150,30 @@ class PhotoFrame:
     def setup_config_screen(self):
         print(f"Script directory: {self.script_dir}")
 
-        # TODO: start local wifi hotspot
+        # Start local wifi hotspot
         subprocess.run(["../start_hotspot.sh"], cwd=self.script_dir)
+        self.ip_address = socket.gethostbyname(socket.gethostname())
 
-        # TODO: start flask server (config_interface-backend/server.py), get server local address
-        # gunicorn -w 2 -b 0.0.0.0:8000 server:app
+        # Build frontend, I don't think this will be necessary to do every time
+        frontend_dir = os.path.join(self.script_dir, "..", "config_interface-frontend")
+        subprocess.run(["npm", "run", "build"], cwd=frontend_dir)
 
-        # TODO: start react app (config_interface-frontend)
-        # vite dev --host (? or build and serve statically? vite build && vite preview (or host using python?)) https://vite.dev/guide/static-deploy
-
-        # Generate QR code with current config webpage info
-        qr_data = (
-            "test-config-page-url"  # TODO: plug in server local address from above
+        # Start backend server
+        self.backend_process = subprocess.Popen(
+            ["gunicorn", "-w", "2", "-b", "0.0.0.0:5555", "server:app"],
+            cwd=os.path.join(self.script_dir, "..", "config_interface-backend"),
         )
+
+        # Start frontend server using Python's built-in HTTP server
+        dist_dir = os.path.join(frontend_dir, "dist")
+        self.frontend_process = subprocess.Popen(
+            ["python3", "-m", "http.server", "6666", "--directory", dist_dir],
+            cwd=frontend_dir,
+        )
+
+        # Generate QR code with config frontend URL
+        qr_data = f"http://{self.ip_address}:6666"
+
         qr_output_path = os.path.join(self.script_dir, "qr_code.png")
         generate_qr_code(data=qr_data, output_file=qr_output_path)
         qr_img = pygame.image.load(qr_output_path)
@@ -220,8 +239,7 @@ class PhotoFrame:
 
     def render_display_screen(self, clock):
         # Check if it's time to change image
-        interval = self.get_interval_seconds()
-        if time.time() - self.last_change >= interval:
+        if time.time() - self.last_change >= self.refresh_interval:
 
             self.image_index += 1
 
@@ -234,13 +252,13 @@ class PhotoFrame:
             if self.next_surface:
                 self.current_surface = self.next_surface
             else:
-                self.current_surface = self.load_and_scale_image(
+                self.current_surface = self.load_image(
                     self.image_files[self.image_index]
                 )
 
             # Preload next image
             next_index = (self.image_index + 1) % len(self.image_files)
-            self.next_surface = self.load_and_scale_image(self.image_files[next_index])
+            self.next_surface = self.load_image(self.image_files[next_index])
 
             self.last_change = time.time()
 
@@ -253,6 +271,12 @@ class PhotoFrame:
                 center=(self.screen_width // 2, self.screen_height // 2)
             )
             self.screen.blit(self.current_surface, img_rect)
+
+    def load_image(self, image_path):
+        image = load_and_scale_image(image_path, self.screen_width, self.screen_height)
+        if self.color_adjustment is not None:
+            image = adjust_image_temp(image, int(self.color_adjustment))
+        return image
 
     def get_interval_seconds(self):
         config_path = os.path.join(self.script_dir, "static", "config.yml")
@@ -270,22 +294,17 @@ class PhotoFrame:
                 pass
         return 2 * 60 * 60  # Default to 2 hours in seconds
 
-    def load_and_scale_image(self, image_path):
-        try:
-            img = pygame.image.load(image_path)
-            img_width, img_height = img.get_size()
-
-            # Calculate scaling to fit screen while maintaining aspect ratio
-            scale = min(self.screen_width / img_width, self.screen_height / img_height)
-
-            new_width = int(img_width * scale)
-            new_height = int(img_height * scale)
-            scaled_img = pygame.transform.scale(img, (new_width, new_height))
-
-            return scaled_img
-        except Exception as e:
-            print(f"Error loading {image_path}: {e}")
-            return None
+    def get_color_adjustment(self):
+        config_path = os.path.join(self.script_dir, "static", "config.yml")
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r") as f:
+                    config = yaml.safe_load(f)
+                    color_temp = config.get("color_temperature", None)
+                    return color_temp
+            except:
+                pass
+        return None
 
 
 def main():
