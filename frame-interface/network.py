@@ -5,8 +5,8 @@ import os
 # After those steps are taken, the following sudo calls should work without a password prompt
 
 def enable_wifi_hotspot():
-	os.system('sudo start-hotspot.sh')
+	os.system('sudo ./start-hotspot.sh')
 
 
 def disable_wifi_hotspot():
-	os.system('sudo stop-hotspot.sh')
+	os.system('sudo ./stop-hotspot.sh')

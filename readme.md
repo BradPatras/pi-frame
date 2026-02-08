@@ -96,6 +96,17 @@ Consists following components:
 
 ## Logs
 
+### 2/7/26
+
+I'm attempting to prove out some of this stuff on the actual pi hardware now and immediately hitting a wall with the hotspot part (yikes!).  I'm getting this error:
+
+```sh
+Error: Connection activation failed: 802.1X supplicant took too long to authenticate
+```
+
+seems i'm not the only one: [https://github.com/raspberrypi/trixie-feedback/issues/29](https://github.com/raspberrypi/trixie-feedback/issues/29)
+
+
 #### 1/29/26
 
 (i'm a dad now)
