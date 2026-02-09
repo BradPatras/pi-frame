@@ -3,10 +3,16 @@ import Uploady, { useItemProgressListener } from "@rpldy/uploady";
 import { asUploadButton } from "@rpldy/upload-button";
 import * as S from "./App.styles";
 
+type Image = {
+  name: string;
+  url: string;
+};
+
 function App() {
   const [refreshInterval, setRefreshInterval] = useState("8");
   const [timeUnit, setTimeUnit] = useState("hours");
   const [colorTemp, setColorTemp] = useState("");
+  const [images, setImages] = useState<Image[]>([]);
 
   // backend url is hosted on port 7100 of the same hostname as the frontend
   const baseUrl = `http://${window.location.hostname}:7100`;
@@ -62,6 +68,19 @@ function App() {
         setRefreshInterval("8");
         setTimeUnit("hours");
         setColorTemp("");
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log(`Fetching images from ${baseUrl}/api/images`);
+    fetch(`${baseUrl}/api/images`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Images fetched:", data);
+        setImages(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching images:", error);
       });
   }, []);
 
@@ -137,12 +156,22 @@ function App() {
           Leave empty to use the display's default setting.
         </S.Subtitle>
 
-        <S.UploadSection>
+        <S.ImagesSection>
           <Uploady destination={{ url: "https://my-server/upload" }}>
             <LogProgress />
             <UploadButton />
           </Uploady>
-        </S.UploadSection>
+
+          {images.map((image) => (
+            <S.ImageListItem key={image.name}>
+              <S.ImageThumbnail
+                src={`${baseUrl}${image.url}`}
+                alt={image.name}
+              />
+              <S.ImageName>{image.name}</S.ImageName>
+            </S.ImageListItem>
+          ))}
+        </S.ImagesSection>
       </S.Content>
     </S.AppContainer>
   );

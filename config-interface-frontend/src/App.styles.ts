@@ -126,14 +126,6 @@ export const Select = styled.select`
   }
 `;
 
-export const UploadSection = styled.div`
-  margin-top: ${({ theme }) => theme.spacing.xlarge};
-  padding: ${({ theme }) => theme.spacing.large};
-  background-color: ${({ theme }) => theme.colors.cardBackground};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  box-shadow: ${({ theme }) => theme.shadows.light};
-`;
-
 export const StyledUploadButton = styled.button`
   padding: 15px 30px;
   font-size: ${({ theme }) => theme.fontSizes.base};
@@ -167,4 +159,34 @@ export const StyledUploadButton = styled.button`
     font-size: 1rem;
     padding: 12px 24px;
   }
+`;
+
+export const ImagesSection = styled.div`
+  margin-top: ${({ theme }) => theme.spacing.xlarge};
+  padding: ${({ theme }) => theme.spacing.large};
+  background-color: ${({ theme }) => theme.colors.cardBackground};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  box-shadow: ${({ theme }) => theme.shadows.light};
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.medium};
+  flex-direction: column;
+`;
+
+export const ImageListItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.medium};
+`;
+
+export const ImageThumbnail = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  box-shadow: ${({ theme }) => theme.shadows.light};
+`;
+
+export const ImageName = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: ${({ theme }) => theme.colors.text};
 `;

@@ -23,8 +23,12 @@ def get_images():
             if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
         ]
         files.sort()
-        image_paths = [f"images/{f}" for f in files]
-        return jsonify(image_paths)
+
+        image_objects = []
+        for f in files:
+            image_objects.append({"name": f, "url": f"/static/images/{f}"})
+
+        return jsonify(image_objects)
     return jsonify([])
 
 
