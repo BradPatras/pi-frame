@@ -96,16 +96,22 @@ Consists following components:
 
 ## Logs
 
+### 2/9/26
+
+I added an install script because I want to wipe the rpi to start fresh on bookworm instead of trixie (to see if that fixes the hotspot issue).
+I realized having the npm build step happen as part of the frame's run script is a terrible idea beacuse that'd mean i'd need to have node and npm installed on the pi and that's a pretty bug lift for that little guy.
+
+So the plan is to prebuild the react app before pushing it to the pi, then just use a simple python server to host it on the pi's local network.
+
 ### 2/7/26
 
-I'm attempting to prove out some of this stuff on the actual pi hardware now and immediately hitting a wall with the hotspot part (yikes!).  I'm getting this error:
+I'm attempting to prove out some of this stuff on the actual pi hardware now and immediately hitting a wall with the hotspot part (yikes!). I'm getting this error:
 
 ```sh
 Error: Connection activation failed: 802.1X supplicant took too long to authenticate
 ```
 
 seems i'm not the only one: [https://github.com/raspberrypi/trixie-feedback/issues/29](https://github.com/raspberrypi/trixie-feedback/issues/29)
-
 
 #### 1/29/26
 
