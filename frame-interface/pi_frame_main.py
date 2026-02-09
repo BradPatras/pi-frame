@@ -152,11 +152,11 @@ class PhotoFrame:
 
         # Start local wifi hotspot
         subprocess.run(["../start_hotspot.sh"], cwd=self.script_dir)
+        # TODO: this may not work for the pi, need to do some testing with the pi hardware/os
         self.ip_address = socket.gethostbyname(socket.gethostname())
 
-        # Build frontend, I don't think this will be necessary to do every time
+        # Frontend should be pre-built before deployment (npm run build)
         frontend_dir = os.path.join(self.script_dir, "..", "config_interface-frontend")
-        subprocess.run(["npm", "run", "build"], cwd=frontend_dir)
 
         # Start backend server
         self.backend_process = subprocess.Popen(
