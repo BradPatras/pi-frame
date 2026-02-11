@@ -1,5 +1,9 @@
-import { useState, useEffect } from "react";
-import Uploady, { useItemProgressListener } from "@rpldy/uploady";
+import { useState, useEffect, useMemo } from "react";
+import Uploady, {
+  useItemProgressListener,
+  useBatchFinishListener,
+  useBatchStartListener,
+} from "@rpldy/uploady";
 import { asUploadButton } from "@rpldy/upload-button";
 import * as S from "./App.styles";
 
@@ -13,9 +17,11 @@ function App() {
   const [timeUnit, setTimeUnit] = useState("hours");
   const [colorTemp, setColorTemp] = useState("");
   const [images, setImages] = useState<Image[]>([]);
+  const [uploadBatchCount, setUploadBatchCount] = useState(0);
 
   // backend url is hosted on port 7100 of the same hostname as the frontend
   const baseUrl = `http://${window.location.hostname}:7100`;
+  const uploadUrl = `${baseUrl}/api/upload`;
 
   const updateConfig = (
     refreshInterval: string,
@@ -53,6 +59,29 @@ function App() {
       });
   };
 
+  const deleteImage = (imageName: string) => {
+    console.log("Deleting image:", imageName);
+    fetch(`${baseUrl}/api/delete_image`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: imageName }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        // Remove deleted image from state
+        setImages((prevImages) =>
+          prevImages.filter((img) => img.name !== imageName),
+        );
+      })
+      .catch((error) => {
+        console.error("Error deleting image:", error);
+      });
+  };
+
   useEffect(() => {
     console.log(`Fetching config from ${baseUrl}/api/config`);
     // Fetch config from API
@@ -84,20 +113,35 @@ function App() {
       });
   }, []);
 
-  const LogProgress = () => {
-    useItemProgressListener((item) => {
-      console.log(
-        `>>>>> (hook) File ${item.file.name} completed: ${item.completed}`,
-      );
+  const UploadCompletionListener = () => {
+    useBatchFinishListener(() => {
+      setUploadBatchCount((count) => count - 1);
+
+      // If the last batch has finished uploading, refetch the images
+      if (uploadBatchCount <= 1) {
+        fetch(`${baseUrl}/api/images`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Updated images fetched:", data);
+            setImages(data);
+          })
+          .catch((error) => {
+            console.error("Error fetching updated images:", error);
+          });
+      }
+    });
+
+    useBatchStartListener(() => {
+      setUploadBatchCount((count) => count + 1);
     });
     return null;
   };
 
   const UploadButton = asUploadButton(
     (props: React.ComponentProps<"button">) => {
-      return (
+      return uploadBatchCount === 0 ? (
         <S.StyledUploadButton {...props}>Upload Images</S.StyledUploadButton>
-      );
+      ) : null;
     },
   );
 
@@ -157,8 +201,8 @@ function App() {
         </S.Subtitle>
 
         <S.ImagesSection>
-          <Uploady destination={{ url: "https://my-server/upload" }}>
-            <LogProgress />
+          <Uploady destination={{ url: uploadUrl }}>
+            <UploadCompletionListener />
             <UploadButton />
           </Uploady>
 
@@ -169,6 +213,14 @@ function App() {
                 alt={image.name}
               />
               <S.ImageName>{image.name}</S.ImageName>
+              <div style={{ flexGrow: 1 }} />
+              <S.DeleteButton
+                onClick={() => {
+                  deleteImage(image.name);
+                }}
+              >
+                ✕
+              </S.DeleteButton>
             </S.ImageListItem>
           ))}
         </S.ImagesSection>

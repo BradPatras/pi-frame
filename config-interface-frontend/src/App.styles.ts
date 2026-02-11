@@ -190,3 +190,27 @@ export const ImageName = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.base};
   color: ${({ theme }) => theme.colors.text};
 `;
+
+export const DeleteButton = styled.button`
+  padding: 8px 16px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: white;
+  background-color: #e74c3c;
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  cursor: pointer;
+  outline: none;
+
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+
+  &:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;

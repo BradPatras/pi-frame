@@ -1,16 +1,46 @@
 #!/usr/bin/env python3
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, flash, jsonify, redirect, send_from_directory, request
 from flask_cors import CORS
 import os
 import yaml
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = "static/images"
 CORS(app)
 
 
 @app.route("/<path:path>")
 def serve_static(path):
     return send_from_directory("static", path)
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "webp",
+    }
+
+
+@app.route("/api/upload", methods=["POST"])
+def upload_image():
+    # check if the post request has the file part
+    if "file" not in request.files:
+        flash("No file part")
+        return jsonify({"status": "error", "message": "No file part in request"}), 400
+    file = request.files["file"]
+    # If the user does not select a file, the browser submits an
+    # empty file without a filename.
+    if file.filename == "":
+        flash("No selected file")
+        return jsonify({"status": "error", "message": "No file selected"}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        return jsonify({"status": "success"}), 200
 
 
 @app.route("/api/images")
@@ -30,6 +60,28 @@ def get_images():
 
         return jsonify(image_objects)
     return jsonify([])
+
+
+@app.route("/api/delete_image", methods=["POST"])
+def delete_image():
+    data = request.json
+    image_name = secure_filename(data.get("name"))
+    if not image_name:
+        return jsonify({"status": "error", "message": "No image name provided"}), 400
+
+    # Prevent directory traversal
+    if "/" in image_name or "\\" in image_name:
+        return jsonify({"status": "error", "message": "Invalid image name"}), 400
+
+    image_path = os.path.join("static/images", image_name)
+    if os.path.exists(image_path):
+        try:
+            os.remove(image_path)
+            return jsonify({"status": "success"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+    else:
+        return jsonify({"status": "error", "message": "Image not found"}), 404
 
 
 @app.route("/api/interval")
