@@ -5,6 +5,7 @@ import os
 import yaml
 from werkzeug.utils import secure_filename
 
+
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/images"
 CORS(app)
