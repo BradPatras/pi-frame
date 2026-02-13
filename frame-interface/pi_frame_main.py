@@ -7,15 +7,11 @@ import os
 from PIL import Image
 import glob
 import yaml
-import RPi.GPIO as GPIO
+from gpiozero import Button
 from generate_qr import generate_qr_code
 import subprocess
 import socket
 from image_utils import load_and_scale_image, adjust_image_temp
-
-
-# Constants
-CONFIG_BUTTON_GPIO = 16
 
 
 class PhotoFrame:
@@ -44,7 +40,11 @@ class PhotoFrame:
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
         self.ip_address = None
 
-    def config_button_pressed_callback(self, channel):
+        # Config button setup
+        self.config_button = Button(16)
+        self.config_button.when_pressed = self.config_button_pressed_callback
+
+    def config_button_pressed_callback(self):
         self.config_button_pressed = True
 
     def run(self):
@@ -62,16 +62,6 @@ class PhotoFrame:
         # Hide mouse cursor
         pygame.mouse.set_visible(False)
         print("Display setup complete")
-
-        # Set up config button interrupt
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(CONFIG_BUTTON_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(
-            CONFIG_BUTTON_GPIO,
-            GPIO.FALLING,
-            callback=self.config_button_pressed_callback,
-            bouncetime=100,
-        )
 
         # Initialize photo display
         self.setup_photo_display()
@@ -107,7 +97,6 @@ class PhotoFrame:
         self.stop()
 
     def stop(self):
-        GPIO.cleanup()
         pygame.quit()
         sys.exit(0)
 
