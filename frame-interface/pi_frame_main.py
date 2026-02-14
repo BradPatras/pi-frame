@@ -1,10 +1,8 @@
 import pygame
-import signal
 import sys
 import random
 import time
 import os
-from PIL import Image
 import glob
 import yaml
 from gpiozero import Button
