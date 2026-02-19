@@ -6,3 +6,4 @@ pygame==2.6.1
 qrcode==8.2
 flask-cors==6.0.2
 gpiozero==2.0.1
+rpi-lgpio==0.6
