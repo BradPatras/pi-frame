@@ -19,6 +19,12 @@ class PhotoFrame:
         self.screen_width = 0
         self.screen_height = 0
 
+        # Config display state
+        self.scaled_qr_img = None
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        print(f"Script directory: {self.script_dir}")
+        self.ip_address = None
+
         # Mode state
         self.config_button_pressed = False
         self.is_config_mode = False
@@ -33,14 +39,9 @@ class PhotoFrame:
         self.refresh_interval = self.get_interval_seconds()
         self.color_adjustment = self.get_color_adjustment()
 
-        # Config display state
-        self.scaled_qr_img = None
-        self.script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.ip_address = None
-
         # Config button setup
-        self.config_button = Button(16)
-        self.config_button.when_pressed = self.config_button_pressed_callback
+        # self.config_button = Button(16)
+        # self.config_button.when_pressed = self.config_button_pressed_callback
 
     def config_button_pressed_callback(self):
         self.config_button_pressed = True
@@ -131,35 +132,37 @@ class PhotoFrame:
         # Reset display state
         self.image_index = 0
         self.last_change = time.time()
-        self.current_surface = None
         self.next_surface = None
+        self.current_surface = self.load_image(self.image_files[self.image_index])
 
     def setup_config_screen(self):
-        print(f"Script directory: {self.script_dir}")
-
         # Start local wifi hotspot
-        subprocess.run(["../start_hotspot.sh"], cwd=self.script_dir)
+        subprocess.run(["sh", "../start-hotspot.sh"], cwd=self.script_dir)
         # TODO: this may not work for the pi, need to do some testing with the pi hardware/os
-        self.ip_address = socket.gethostbyname(socket.gethostname())
+        # self.ip_address = socket.gethostbyname(socket.gethostname())
+        # This probably wont work since the pi won't have internet access.
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        self.ip_address = s.getsockname()[0]
 
         # Frontend should be pre-built before deployment (npm run build)
-        frontend_dir = os.path.join(self.script_dir, "..", "config_interface-frontend")
+        frontend_dir = os.path.join(self.script_dir, "..", "config-interface-frontend")
 
         # Start backend server
         self.backend_process = subprocess.Popen(
-            ["gunicorn", "-w", "2", "-b", "0.0.0.0:5555", "server:app"],
-            cwd=os.path.join(self.script_dir, "..", "config_interface-backend"),
+            ["gunicorn", "-w", "2", "-b", "0.0.0.0:5050", "server:app"],
+            cwd=os.path.join(self.script_dir, "..", "config-interface-backend"),
         )
 
         # Start frontend server using Python's built-in HTTP server
         dist_dir = os.path.join(frontend_dir, "dist")
         self.frontend_process = subprocess.Popen(
-            ["python3", "-m", "http.server", "6666", "--directory", dist_dir],
+            ["python3", "-m", "http.server", "6060", "--directory", dist_dir],
             cwd=frontend_dir,
         )
 
         # Generate QR code with config frontend URL
-        qr_data = f"http://{self.ip_address}:6666"
+        qr_data = f"http://{self.ip_address}:6060"
 
         qr_output_path = os.path.join(self.script_dir, "qr_code.png")
         generate_qr_code(data=qr_data, output_file=qr_output_path)
@@ -297,3 +300,7 @@ class PhotoFrame:
 def main():
     frame = PhotoFrame()
     frame.run()
+
+
+if __name__ == "__main__":
+    main()
