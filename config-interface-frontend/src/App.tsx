@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Uploady, {
-  useItemProgressListener,
   useBatchFinishListener,
   useBatchStartListener,
 } from "@rpldy/uploady";
@@ -19,8 +18,8 @@ function App() {
   const [images, setImages] = useState<Image[]>([]);
   const [uploadBatchCount, setUploadBatchCount] = useState(0);
 
-  // backend url is hosted on port 7100 of the same hostname as the frontend
-  const baseUrl = `http://${window.location.hostname}:7100`;
+  // backend url is hosted on port 5050 of the same hostname as the frontend
+  const baseUrl = `http://${window.location.hostname}:5050`;
   const uploadUrl = `${baseUrl}/api/upload`;
 
   const updateConfig = (
