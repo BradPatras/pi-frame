@@ -201,7 +201,10 @@ function App() {
         </S.Subtitle>
 
         <S.ImagesSection>
-          <Uploady destination={{ url: uploadUrl }}>
+          <Uploady
+            accept="image/jpeg,image/png,image/gif"
+            destination={{ url: uploadUrl }}
+          >
             <UploadCompletionListener />
             <UploadButton />
           </Uploady>
