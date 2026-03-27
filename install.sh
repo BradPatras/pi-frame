@@ -1,6 +1,6 @@
 #!/bin/bash
-# This script is meant to be run on the pi frame once after the code is copied over. 
-# It will set up the python environment and install the necessary dependencies.
+# This script is meant to be run on the pi frame once after the project is copied over. 
+# It will set up the python environment, install the necessary dependencies and copy the systemctl service into place.
 
 # Update package lists and install necessary packages
 echo "Updating package lists and installing dependencies..."
