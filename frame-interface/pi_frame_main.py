@@ -164,7 +164,7 @@ class PhotoFrame:
         # Generate QR code with config frontend URL
         qr_data = f"http://{self.ip_address}:6060"
 
-        qr_output_path = os.path.join(self.script_dir, "qr_code.png")
+        qr_output_path = os.path.join(self.script_dir, "interface_qr_code.png")
         generate_qr_code(data=qr_data, output_file=qr_output_path)
         qr_img = pygame.image.load(qr_output_path)
         qr_width, qr_height = qr_img.get_size()

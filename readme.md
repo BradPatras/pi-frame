@@ -96,6 +96,15 @@ Consists following components:
 
 ## Logs
 
+### 3/18/26
+
+Learned there's a standard for communicating wifi connections via qr code:
+
+> WIFI:T:WPA;S:MyNetwork;P:MyPassword123;;
+
+This means I can communicate both the network and the webpage via qr codes
+
+
 ### 2/9/26
 
 I added an install script because I want to wipe the rpi to start fresh on bookworm instead of trixie (to see if that fixes the hotspot issue).
