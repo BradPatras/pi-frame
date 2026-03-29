@@ -4,8 +4,8 @@
 
 # Update package lists and install necessary packages
 echo "Updating package lists and installing dependencies..."
-sudo apt-get update
-sudo apt-get install -y python3-venv python3-pip unclutter
+apt-get update
+apt-get install -y python3-venv python3-pip unclutter
 
 # Create a virtual environment and install Python dependencies
 echo "Setting up Python virtual environment and installing dependencies..."
@@ -21,7 +21,7 @@ chmod +x pi-frame/stop-hotspot.sh
 
 # Add the photo display service to systemd
 echo "Setting up systemd service for the photo display..."
-sudo cp pi-frame/photo-display.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable photo-display.service
-sudo systemctl start photo-display.service
+cp pi-frame/photo-display.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable photo-display.service
+systemctl start photo-display.service

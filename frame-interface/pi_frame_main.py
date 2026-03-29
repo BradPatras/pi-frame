@@ -10,6 +10,7 @@ from generate_qr import generate_qr_code
 import subprocess
 import socket
 from image_utils import load_and_scale_image, adjust_image_temp
+from network import enable_wifi_hotspot, disable_wifi_hotspot
 
 
 class PhotoFrame:
@@ -103,7 +104,7 @@ class PhotoFrame:
         print(f"Script directory: {self.script_dir}")
 
         # Stop local wifi hotspot
-        subprocess.run(["../stop_hotspot.sh"], cwd=self.script_dir)
+        disable_wifi_hotspot()
 
         # Get image files
         images_folder = os.path.join(self.script_dir, "static", "images")
@@ -137,7 +138,7 @@ class PhotoFrame:
 
     def setup_config_screen(self):
         # Start local wifi hotspot
-        subprocess.run(["sh", "../start-hotspot.sh"], cwd=self.script_dir)
+        enable_wifi_hotspot()
         # TODO: this may not work for the pi, need to do some testing with the pi hardware/os
         # self.ip_address = socket.gethostbyname(socket.gethostname())
         # This probably wont work since the pi won't have internet access.
@@ -150,7 +151,7 @@ class PhotoFrame:
 
         # Start backend server
         self.backend_process = subprocess.Popen(
-            ["gunicorn", "-w", "2", "-b", "0.0.0.0:5050", "server:app"],
+            ["gunicorn", "-w", "2", "-b", "0.0.0.0:50001", "server:app"],
             cwd=os.path.join(self.script_dir, "..", "config-interface-backend"),
         )
 
@@ -162,7 +163,7 @@ class PhotoFrame:
         )
 
         # Generate QR code with config frontend URL
-        qr_data = f"http://{self.ip_address}:6060"
+        qr_data = f"http://{self.ip_address}:50002"
 
         qr_output_path = os.path.join(self.script_dir, "interface_qr_code.png")
         generate_qr_code(data=qr_data, output_file=qr_output_path)
