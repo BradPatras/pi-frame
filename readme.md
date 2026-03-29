@@ -96,6 +96,32 @@ Consists following components:
 
 ## Logs
 
+### 3/26/26
+
+Trying the wifi hotspot out on a raspberry pi zero _2_. Hopefully the more recent hardware will somehow fix the wifi hotspot issues. Also attempting the 64 bit OS since the more powerful pi should be able to handle it.
+
+Promising! the pi zero 2 running latest 64 bit OS did successfully startup the hotspot AND my android device was able to connect to it!
+
+Now back to the actual frame software...
+
+jk I want some type of build system or task runner in this project to help me remember how to build and package up the project for use on the pi itself.
+
+`just` seems to be a simple easy task runner that'll help me organize the commands I run often.
+
+### 3/18/26
+
+Learned there's a standard for communicating wifi connections via qr code:
+
+> WIFI:T:WPA;S:MyNetwork;P:MyPassword123;;
+
+This means I can communicate both the network and the webpage via qr codes
+
+I downgraded the OS to the previous version (trixie -> bookworm) and viola! the wifi hotspot command worked and I could join the network from my pc. The problem is that I was unable to connect to the hotspot from my android device. My phone kept behaving like I was entering the wrong password.
+
+After some googling I may have found other people reporting the same thing: https://raspberrypi.stackexchange.com/questions/107188/android-wont-connect-to-raspi-access-point
+
+I haven't tried out the suggestions in that thread though.
+
 ### 2/9/26
 
 I added an install script because I want to wipe the rpi to start fresh on bookworm instead of trixie (to see if that fixes the hotspot issue).
