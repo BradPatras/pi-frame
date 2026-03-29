@@ -297,3 +297,7 @@ class PhotoFrame:
 def main():
     frame = PhotoFrame()
     frame.run()
+
+
+if __name__ == "__main__":
+    main()

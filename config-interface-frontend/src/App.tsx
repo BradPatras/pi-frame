@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Uploady, {
-  useItemProgressListener,
   useBatchFinishListener,
   useBatchStartListener,
 } from "@rpldy/uploady";
