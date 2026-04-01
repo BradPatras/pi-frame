@@ -18,8 +18,8 @@ function App() {
   const [images, setImages] = useState<Image[]>([]);
   const [uploadBatchCount, setUploadBatchCount] = useState(0);
 
-  // backend url is hosted on port 5050 of the same hostname as the frontend
-  const baseUrl = `http://${window.location.hostname}:5050`;
+  // backend url is hosted on port 50001 of the same hostname as the frontend
+  const baseUrl = `http://${window.location.hostname}:50001`;
   const uploadUrl = `${baseUrl}/api/upload`;
 
   const updateConfig = (

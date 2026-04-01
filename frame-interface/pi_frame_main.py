@@ -8,7 +8,6 @@ import yaml
 from gpiozero import Button
 from generate_qr import generate_qr_code
 import subprocess
-import socket
 from image_utils import load_and_scale_image, adjust_image_temp
 from network import enable_wifi_hotspot, disable_wifi_hotspot
 
@@ -24,7 +23,9 @@ class PhotoFrame:
         self.scaled_qr_img = None
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
         print(f"Script directory: {self.script_dir}")
-        self.ip_address = None
+
+        # The pi's NetworkManager shoooouuld always set the pi's IP to 10.42.0.1 when in hotspot mode
+        self.ip_address = "10.42.0.1"
 
         # Mode state
         self.config_button_pressed = False
@@ -41,8 +42,8 @@ class PhotoFrame:
         self.color_adjustment = self.get_color_adjustment()
 
         # Config button setup
-        # self.config_button = Button(16)
-        # self.config_button.when_pressed = self.config_button_pressed_callback
+        self.config_button = Button(16)
+        self.config_button.when_pressed = self.config_button_pressed_callback
 
     def config_button_pressed_callback(self):
         self.config_button_pressed = True
@@ -107,7 +108,9 @@ class PhotoFrame:
         disable_wifi_hotspot()
 
         # Get image files
-        images_folder = os.path.join(self.script_dir, "static", "images")
+        images_folder = os.path.join(
+            self.script_dir, "../", "config-interface-backend", "static", "images"
+        )
         print(f"Looking for images in: {images_folder}")
         image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
         self.image_files = []
@@ -139,26 +142,19 @@ class PhotoFrame:
     def setup_config_screen(self):
         # Start local wifi hotspot
         enable_wifi_hotspot()
-        # TODO: this may not work for the pi, need to do some testing with the pi hardware/os
-        # self.ip_address = socket.gethostbyname(socket.gethostname())
-        # This probably wont work since the pi won't have internet access.
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        self.ip_address = s.getsockname()[0]
 
         # Frontend should be pre-built before deployment (npm run build)
-        frontend_dir = os.path.join(self.script_dir, "..", "config-interface-frontend")
+        frontend_dir = os.path.join(self.script_dir, "../", "config-interface-frontend")
 
         # Start backend server
         self.backend_process = subprocess.Popen(
             ["gunicorn", "-w", "2", "-b", "0.0.0.0:50001", "server:app"],
-            cwd=os.path.join(self.script_dir, "..", "config-interface-backend"),
+            cwd=os.path.join(self.script_dir, "../", "config-interface-backend"),
         )
 
         # Start frontend server using Python's built-in HTTP server
-        dist_dir = os.path.join(frontend_dir, "dist")
         self.frontend_process = subprocess.Popen(
-            ["python3", "-m", "http.server", "6060", "--directory", dist_dir],
+            ["python3", "-m", "http.server", "50002"],
             cwd=frontend_dir,
         )
 

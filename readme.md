@@ -96,6 +96,18 @@ Consists following components:
 
 ## Logs
 
+### 4/1/26
+
+Got the frame running on the pi zero 2.
+
+it worrrrrrrkkkssssss
+
+Some hurdles
+- the venv activate call within the install script doesn't work, needs to be in the start script instead.
+- when the start script runs, it shuts off the wifi, which is annoying because i'm ftp-ing to edit files so it needs reset every time
+- Found out that the debian network manager basically hard-codes the hotspot hosts ip address so that makes it easier to locate the config interface on the client
+- still need to update the frame interface in config mode to show the wifi qr code
+
 ### 3/26/26
 
 Trying the wifi hotspot out on a raspberry pi zero _2_. Hopefully the more recent hardware will somehow fix the wifi hotspot issues. Also attempting the 64 bit OS since the more powerful pi should be able to handle it.

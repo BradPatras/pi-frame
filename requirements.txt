@@ -6,4 +6,6 @@ pygame==2.6.1
 qrcode==8.2
 flask-cors==6.0.2
 gpiozero==2.0.1
-rpi-lgpio==0.6
+# lgpio wheel failed to build but it worked using this instead 
+# https://github.com/waveform80/rpi-lgpio/issues/12
+https://github.com/Gadgetoid/PY_LGPIO/releases/download/0.2.2.0/lgpio-0.2.2.0.tar.gz

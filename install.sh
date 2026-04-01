@@ -9,19 +9,19 @@ apt-get install -y python3-venv python3-pip unclutter
 
 # Create a virtual environment and install Python dependencies
 echo "Setting up Python virtual environment and installing dependencies..."
-python3 -m venv pi-frame/.venv
-source pi-frame/.venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install --upgrade pip
-pip install -r pi-frame/requirements.txt
+pip install -r requirements.txt
 
 # Make scripts executable
-chmod +x pi-frame/start-frame.sh
-chmod +x pi-frame/start-hotspot.sh
-chmod +x pi-frame/stop-hotspot.sh
+chmod +x start-frame.sh
+chmod +x start-hotspot.sh
+chmod +x stop-hotspot.sh
 
 # Add the photo display service to systemd
 echo "Setting up systemd service for the photo display..."
-cp pi-frame/photo-display.service /etc/systemd/system/
+cp photo-display.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable photo-display.service
 systemctl start photo-display.service

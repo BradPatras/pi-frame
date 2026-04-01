@@ -9,4 +9,6 @@ xset s noblank
 unclutter -idle 1 &
 
 # Start the photo display script
-/home/bread/pi-frame/.venv/bin/python /home/bread/pi-frame/frame-interface/pi_frame_main.py
+source /home/bread/frame/.venv/bin/activate
+
+/home/bread/frame/.venv/bin/python /home/bread/frame/frame-interface/pi_frame_main.py
