@@ -21,8 +21,6 @@ class PhotoFrame:
 
         # Config display state
         self.scaled_qr_img = None
-        self.script_dir = os.path.dirname(os.path.abspath(__file__))
-        print(f"Script directory: {self.script_dir}")
 
         # The pi's NetworkManager shoooouuld always set the pi's IP to 10.42.0.1 when in hotspot mode
         self.ip_address = "10.42.0.1"
@@ -40,6 +38,21 @@ class PhotoFrame:
         self.image_files = []
         self.refresh_interval = self.get_interval_seconds()
         self.color_adjustment = self.get_color_adjustment()
+
+        # Paths
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = os.path.join(
+            self.script_dir, "../", "config-interface-backend", "static", "config.yml"
+        )
+        self.images_path = os.path.join(
+            self.script_dir, "../", "config-interface-backend", "static", "images"
+        )
+        self.frontend_dir_path = os.path.join(
+            self.script_dir, "../", "config-interface-frontend"
+        )
+        self.backend_dir_path = os.path.join(
+            self.script_dir, "../", "config-interface-backend"
+        )
 
         # Config button setup
         self.config_button = Button(16)
@@ -108,23 +121,21 @@ class PhotoFrame:
         disable_wifi_hotspot()
 
         # Get image files
-        images_folder = os.path.join(
-            self.script_dir, "../", "config-interface-backend", "static", "images"
-        )
-        print(f"Looking for images in: {images_folder}")
+        print(f"Looking for images in: {self.images_path}")
         image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
         self.image_files = []
 
         self.refresh_interval = self.get_interval_seconds()
 
+        # collect image-typed files in the images directory
         for ext in image_extensions:
-            self.image_files.extend(glob.glob(os.path.join(images_folder, ext)))
+            self.image_files.extend(glob.glob(os.path.join(self.images_path, ext)))
 
         if not self.image_files:
-            print(f"No images found in {images_folder}")
-            print(f"Directory exists: {os.path.exists(images_folder)}")
-            if os.path.exists(images_folder):
-                print(f"Directory contents: {os.listdir(images_folder)}")
+            print(f"No images found in {self.images_path}")
+            print(f"Directory exists: {os.path.exists(self.images_path)}")
+            if os.path.exists(self.images_path):
+                print(f"Directory contents: {os.listdir(self.images_path)}")
             sys.exit(1)
 
         print(f"Found {len(self.image_files)} images")
@@ -143,19 +154,16 @@ class PhotoFrame:
         # Start local wifi hotspot
         enable_wifi_hotspot()
 
-        # Frontend should be pre-built before deployment (npm run build)
-        frontend_dir = os.path.join(self.script_dir, "../", "config-interface-frontend")
-
         # Start backend server
         self.backend_process = subprocess.Popen(
             ["gunicorn", "-w", "2", "-b", "0.0.0.0:50001", "server:app"],
-            cwd=os.path.join(self.script_dir, "../", "config-interface-backend"),
+            cwd=self.backend_dir_path,
         )
 
         # Start frontend server using Python's built-in HTTP server
         self.frontend_process = subprocess.Popen(
             ["python3", "-m", "http.server", "50002"],
-            cwd=frontend_dir,
+            cwd=self.frontend_dir_path,
         )
 
         # Generate QR code with config frontend URL
@@ -266,10 +274,9 @@ class PhotoFrame:
         return image
 
     def get_interval_seconds(self):
-        config_path = os.path.join(self.script_dir, "static", "config.yml")
-        if os.path.exists(config_path):
+        if os.path.exists(self.config_path):
             try:
-                with open(config_path, "r") as f:
+                with open(self.config_path, "r") as f:
                     config = yaml.safe_load(f)
                     interval = config.get("image_interval", 2)
                     interval_unit = config.get("image_interval_unit", "hours")
@@ -282,10 +289,9 @@ class PhotoFrame:
         return 2 * 60 * 60  # Default to 2 hours in seconds
 
     def get_color_adjustment(self):
-        config_path = os.path.join(self.script_dir, "static", "config.yml")
-        if os.path.exists(config_path):
+        if os.path.exists(self.config_path):
             try:
-                with open(config_path, "r") as f:
+                with open(self.config_path, "r") as f:
                     config = yaml.safe_load(f)
                     color_temp = config.get("color_temperature", None)
                     return color_temp
