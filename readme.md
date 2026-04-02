@@ -87,14 +87,18 @@ Consists following components:
 
 ## To do
 
-- [ ] Configuration interface
-- [ ] Upload endpoint on server
+- [X] Configuration interface
+- [X] Upload endpoint on server
 - [ ] Image resizing before save
 - [ ] Custom startup screen (maybe the server will auto-set a random image as the splash screen when photos are added?)
 - [x] Autostart script upon boot
-- [x] Switch back to headless mode (use openbox?) - full os in cmd line mode
+- [ ] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
 ## Logs
+
+### 4/2/26
+
+Tried running without desktop environment started and got no display but just adding startx to the start script invocation fixed that so that the script runs in it's own xserver process.
 
 ### 4/1/26
 
