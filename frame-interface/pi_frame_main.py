@@ -25,20 +25,6 @@ class PhotoFrame:
         # The pi's NetworkManager shoooouuld always set the pi's IP to 10.42.0.1 when in hotspot mode
         self.ip_address = "10.42.0.1"
 
-        # Mode state
-        self.config_button_pressed = False
-        self.is_config_mode = False
-        self.running = True
-
-        # Photo display state
-        self.image_index = 0
-        self.last_change = None
-        self.current_surface = None
-        self.next_surface = None
-        self.image_files = []
-        self.refresh_interval = self.get_interval_seconds()
-        self.color_adjustment = self.get_color_adjustment()
-
         # Paths
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
         self.config_path = os.path.join(
@@ -53,6 +39,19 @@ class PhotoFrame:
         self.backend_dir_path = os.path.join(
             self.script_dir, "../", "config-interface-backend"
         )
+
+        # Mode state
+        self.config_button_pressed = False
+        self.is_config_mode = False
+        self.running = True
+
+        # Photo display state
+        self.image_index = 0
+        self.last_change = None
+        self.current_surface = None
+        self.image_files = []
+        self.refresh_interval = self.get_interval_seconds()
+        self.color_adjustment = self.get_color_adjustment()
 
         # Config button setup
         self.config_button = Button(16)
@@ -131,12 +130,11 @@ class PhotoFrame:
         for ext in image_extensions:
             self.image_files.extend(glob.glob(os.path.join(self.images_path, ext)))
 
+        # If no images found, swap trigger config mode and return early
         if not self.image_files:
             print(f"No images found in {self.images_path}")
-            print(f"Directory exists: {os.path.exists(self.images_path)}")
-            if os.path.exists(self.images_path):
-                print(f"Directory contents: {os.listdir(self.images_path)}")
-            sys.exit(1)
+            self.config_button_pressed = True
+            return
 
         print(f"Found {len(self.image_files)} images")
 
@@ -147,7 +145,6 @@ class PhotoFrame:
         # Reset display state
         self.image_index = 0
         self.last_change = time.time()
-        self.next_surface = None
         self.current_surface = self.load_image(self.image_files[self.image_index])
 
     def setup_config_screen(self):
@@ -243,17 +240,7 @@ class PhotoFrame:
                 self.image_index = 0
                 random.shuffle(self.image_files)
 
-            # Use preloaded image if available
-            if self.next_surface:
-                self.current_surface = self.next_surface
-            else:
-                self.current_surface = self.load_image(
-                    self.image_files[self.image_index]
-                )
-
-            # Preload next image
-            next_index = (self.image_index + 1) % len(self.image_files)
-            self.next_surface = self.load_image(self.image_files[next_index])
+            self.current_surface = self.load_image(self.image_files[self.image_index])
 
             self.last_change = time.time()
 
@@ -269,7 +256,7 @@ class PhotoFrame:
 
     def load_image(self, image_path):
         image = load_and_scale_image(image_path, self.screen_width, self.screen_height)
-        if self.color_adjustment is not None:
+        if self.color_adjustment is not None and self.color_adjustment != "":
             image = adjust_image_temp(image, int(self.color_adjustment))
         return image
 
@@ -284,20 +271,26 @@ class PhotoFrame:
                         return interval * 60
                     else:  # assume hours
                         return interval * 60 * 60
-            except:
-                pass
-        return 2 * 60 * 60  # Default to 2 hours in seconds
+            except OSError:
+                return 2 * 60 * 60  # Default to 2 hours in seconds
 
     def get_color_adjustment(self):
-        if os.path.exists(self.config_path):
-            try:
-                with open(self.config_path, "r") as f:
-                    config = yaml.safe_load(f)
-                    color_temp = config.get("color_temperature", None)
-                    return color_temp
-            except:
-                pass
-        return None
+        adjustment = None
+        if not os.path.exists(self.config_path):
+            return None
+        try:
+            with open(self.config_path, "r") as f:
+                config = yaml.safe_load(f)
+                adjustment = config.get("color_temperature", None)
+        except OSError:
+            return None
+
+        try:
+            adjustment = int(adjustment)
+        except (TypeError, ValueError):
+            return None
+
+        return adjustment
 
 
 def main():
