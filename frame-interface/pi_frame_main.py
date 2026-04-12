@@ -14,13 +14,19 @@ from network import enable_wifi_hotspot, disable_wifi_hotspot
 
 class PhotoFrame:
     def __init__(self):
+        self.wifi_name = "pi-frame"
+        self.wifi_password = "purp0droid%BAHA"
+
         # Display state
         self.screen = None
         self.screen_width = 0
         self.screen_height = 0
 
         # Config display state
-        self.scaled_qr_img = None
+        self.config_scaled_qr_img = None
+        self.hotspot_scaled_qr_img = None
+        self.backend_process = None
+        self.frontend_process = None
 
         # The pi's NetworkManager shoooouuld always set the pi's IP to 10.42.0.1 when in hotspot mode
         self.ip_address = "10.42.0.1"
@@ -53,14 +59,17 @@ class PhotoFrame:
         self.refresh_interval = self.get_interval_seconds()
         self.color_adjustment = self.get_color_adjustment()
 
-        # Config button setup
-        self.config_button = Button(16)
-        self.config_button.when_pressed = self.config_button_pressed_callback
+        # Button GPIO
+        self.config_button = None
 
     def config_button_pressed_callback(self):
         self.config_button_pressed = True
 
     def run(self):
+        # Config button setup
+        self.config_button = Button(16)
+        self.config_button.when_pressed = self.config_button_pressed_callback
+
         # setup pygame
         pygame.init()
         clock = pygame.time.Clock()
@@ -110,14 +119,22 @@ class PhotoFrame:
         self.stop()
 
     def stop(self):
+        self.stopServers()
         pygame.quit()
         sys.exit(0)
+
+    def stopServers(self):
+        if self.backend_process is not None:
+            self.backend_process.kill()
+        if self.frontend_process is not None:
+            self.frontend_process.kill()
 
     def setup_photo_display(self):
         print(f"Script directory: {self.script_dir}")
 
         # Stop local wifi hotspot
         disable_wifi_hotspot()
+        self.stopServers()
 
         # Get image files
         print(f"Looking for images in: {self.images_path}")
@@ -149,7 +166,7 @@ class PhotoFrame:
 
     def setup_config_screen(self):
         # Start local wifi hotspot
-        enable_wifi_hotspot()
+        enable_wifi_hotspot(self.wifi_name, self.wifi_password)
 
         # Start backend server
         self.backend_process = subprocess.Popen(
@@ -163,61 +180,76 @@ class PhotoFrame:
             cwd=self.frontend_dir_path,
         )
 
-        # Generate QR code with config frontend URL
-        qr_data = f"http://{self.ip_address}:50002"
+        qr_size = self.screen_height / 5
 
-        qr_output_path = os.path.join(self.script_dir, "interface_qr_code.png")
-        generate_qr_code(data=qr_data, output_file=qr_output_path)
-        qr_img = pygame.image.load(qr_output_path)
-        qr_width, qr_height = qr_img.get_size()
-        scale = min(200 / qr_width, 200 / qr_height)
-        new_width = int(qr_width * scale)
-        new_height = int(qr_height * scale)
-        self.scaled_qr_img = pygame.transform.scale(qr_img, (new_width, new_height))
+        # Generate QR code with config frontend URL
+        config_qr_data = f"http://{self.ip_address}:50002"
+        config_qr_output_path = os.path.join(self.script_dir, "config_qr_code.png")
+        generate_qr_code(data=config_qr_data, output_file=config_qr_output_path)
+        qr_img = pygame.image.load(config_qr_output_path)
+        self.config_scaled_qr_img = pygame.transform.scale(qr_img, (qr_size, qr_size))
+
+        # Generate QR code with hotspot info
+        hotspot_qr_data = f"WIFI:T:WPA;S:{self.wifi_name};P:{self.wifi_password};;"
+        hotspot_qr_output_path = os.path.join(self.script_dir, "hotspot_qr_code.png")
+        generate_qr_code(data=hotspot_qr_data, output_file=hotspot_qr_output_path)
+        hotspot_qr_img = pygame.image.load(hotspot_qr_output_path)
+        self.hotspot_scaled_qr_img = pygame.transform.scale(
+            hotspot_qr_img, (qr_size, qr_size)
+        )
 
     def render_config_screen(self):
         # Clear screen with black
         self.screen.fill((0, 0, 0))
 
-        # Draw current image centered
-        img_rect = self.scaled_qr_img.get_rect(
-            center=(self.screen_width // 2, self.screen_height // 2)
+        center_x = self.screen_width // 2
+
+        font = pygame.font.SysFont("Arial", 24)
+        subtitle_font = pygame.font.SysFont("Arial", 16)
+
+        ## HostSpot Instructions (left side of screen)
+        # Draw hotspot QR code
+        hotspot_img_rect = self.hotspot_scaled_qr_img.get_rect(
+            center=(center_x // 2, self.screen_height // 2)
         )
-        self.screen.blit(self.scaled_qr_img, img_rect)
+        self.screen.blit(self.hotspot_scaled_qr_img, hotspot_img_rect)
+        wifi_text = f"WiFi: {self.wifi_name}  Password: {self.wifi_password}"
 
-        # Draw wifi name and password
-        font = pygame.font.SysFont("Arial", 30)
-        subtitle_font = pygame.font.SysFont("Arial", 26)
-
-        wifi_name = "MyWiFiNetwork"
-        wifi_password = "SuperSecretPassword"
-        wifi_text = f"WiFi: {wifi_name}  Password: {wifi_password}"
-
-        step2_surface = font.render(
-            "Then, scan the QR code below to access the configuration page",
-            True,
-            (255, 255, 255),
-        )
-        step2_rect = step2_surface.get_rect(
-            center=(self.screen_width // 2, img_rect.top - 60)
-        )
-        self.screen.blit(step2_surface, step2_rect)
-
-        creds_surface = font.render(wifi_text, True, (255, 255, 255))
-        creds_rect = creds_surface.get_rect(
-            center=(self.screen_width // 2, step2_rect.top - 40)
-        )
-        self.screen.blit(creds_surface, creds_rect)
-
+        # Draw instructions for connecting to hotspot
         step1_surface = font.render(
             "First, connect your phone or computer to the frame's wifi network",
             True,
             (255, 255, 255),
         )
         step1_rect = step1_surface.get_rect(
-            center=(self.screen_width // 2, creds_rect.top - 40)
+            center=(center_x // 2, hotspot_img_rect.bottom + 60)
         )
         self.screen.blit(step1_surface, step1_rect)
+
+        creds_surface = font.render(wifi_text, True, (255, 255, 255))
+        creds_rect = creds_surface.get_rect(
+            center=(center_x // 2, step1_rect.bottom + 40)
+        )
+        self.screen.blit(creds_surface, creds_rect)
+        creds_surface = font.render(wifi_text, True, (255, 255, 255))
+        self.screen.blit(creds_surface, creds_rect)
+
+        ## Config Interface Instructions (right side of screen)
+        # Draw config interface QR code
+        config_img_rect = self.config_scaled_qr_img.get_rect(
+            center=(center_x + center_x // 2, self.screen_height // 2)
+        )
+        self.screen.blit(self.config_scaled_qr_img, config_img_rect)
+
+        step2_surface = font.render(
+            "Then, scan the QR code above to access the configuration page",
+            True,
+            (255, 255, 255),
+        )
+        step2_rect = step2_surface.get_rect(
+            center=(center_x + center_x // 2, config_img_rect.bottom + 60)
+        )
+        self.screen.blit(step2_surface, step2_rect)
 
         step3_surface = subtitle_font.render(
             "Pressing the config button again will return the frame to display mode",
@@ -225,7 +257,7 @@ class PhotoFrame:
             (200, 200, 200),
         )
         step3_rect = step3_surface.get_rect(
-            center=(self.screen_width // 2, img_rect.bottom + 60)
+            center=(center_x, self.screen_height - (20 + step3_surface.get_height()))
         )
         self.screen.blit(step3_surface, step3_rect)
 
@@ -295,7 +327,10 @@ class PhotoFrame:
 
 def main():
     frame = PhotoFrame()
-    frame.run()
+    try:
+        frame.run()
+    except KeyboardInterrupt:
+        frame.stop()
 
 
 if __name__ == "__main__":
