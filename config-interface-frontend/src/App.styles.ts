@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export const AppContainer = styled.div`
   text-align: center;
@@ -170,6 +170,32 @@ export const ImagesSection = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.medium};
   flex-direction: column;
+`;
+
+export const UploadingCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.small};
+  padding: 15px;
+  color: white;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-weight: 600;
+`;
+
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
+export const Spinner = styled.div`
+  width: 24px;
+  height: 24px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  margin: ${({ theme }) => theme.spacing.small};
+  animation: ${spin} 0.8s linear infinite;
 `;
 
 export const ImageListItem = styled.div`

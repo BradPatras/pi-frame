@@ -11,16 +11,53 @@ type Image = {
   url: string;
 };
 
+const UploadButton = asUploadButton((props: React.ComponentProps<"button">) => {
+  return <S.StyledUploadButton {...props}>Upload Images</S.StyledUploadButton>;
+});
+
+function UploadCompletionListener({
+  baseUrl,
+  setImages,
+  setIsUploading,
+}: {
+  baseUrl: string;
+  setImages: React.Dispatch<React.SetStateAction<Image[]>>;
+  setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  useBatchStartListener(() => {
+    setIsUploading(true);
+  });
+
+  useBatchFinishListener(() => {
+    Promise.all([
+      fetch(`${baseUrl}/api/images`).then((response) => response.json()),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ])
+      .then(([data]) => {
+        console.log("Updated images fetched:", data);
+        setImages(data as Image[]);
+        setIsUploading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching updated images:", error);
+        setIsUploading(false);
+      });
+  });
+
+  return null;
+}
+
 function App() {
   const [refreshInterval, setRefreshInterval] = useState("8");
   const [timeUnit, setTimeUnit] = useState("hours");
   const [colorTemp, setColorTemp] = useState("");
   const [images, setImages] = useState<Image[]>([]);
-  const [uploadBatchCount, setUploadBatchCount] = useState(0);
 
   // backend url is hosted on port 50001 of the same hostname as the frontend
   const baseUrl = `http://${window.location.hostname}:50001`;
   const uploadUrl = `${baseUrl}/api/upload`;
+
+  const [isUploading, setIsLoading] = useState(false);
 
   const updateConfig = (
     refreshInterval: string,
@@ -112,38 +149,6 @@ function App() {
       });
   }, []);
 
-  const UploadCompletionListener = () => {
-    useBatchFinishListener(() => {
-      setUploadBatchCount((count) => count - 1);
-
-      // If the last batch has finished uploading, refetch the images
-      if (uploadBatchCount <= 1) {
-        fetch(`${baseUrl}/api/images`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Updated images fetched:", data);
-            setImages(data);
-          })
-          .catch((error) => {
-            console.error("Error fetching updated images:", error);
-          });
-      }
-    });
-
-    useBatchStartListener(() => {
-      setUploadBatchCount((count) => count + 1);
-    });
-    return null;
-  };
-
-  const UploadButton = asUploadButton(
-    (props: React.ComponentProps<"button">) => {
-      return uploadBatchCount === 0 ? (
-        <S.StyledUploadButton {...props}>Upload Images</S.StyledUploadButton>
-      ) : null;
-    },
-  );
-
   return (
     <S.AppContainer>
       <S.Header>
@@ -198,13 +203,22 @@ function App() {
         <S.Subtitle>
           Leave empty to use the display's default setting.
         </S.Subtitle>
-
         <S.ImagesSection>
           <Uploady
             accept="image/jpeg,image/png,image/gif"
             destination={{ url: uploadUrl }}
           >
-            <UploadCompletionListener />
+            <UploadCompletionListener
+              baseUrl={baseUrl}
+              setImages={setImages}
+              setIsUploading={setIsLoading}
+            />
+            {isUploading && (
+              <S.UploadingCell>
+                <S.Spinner />
+                Uploading...
+              </S.UploadingCell>
+            )}
             <UploadButton />
           </Uploady>
 
