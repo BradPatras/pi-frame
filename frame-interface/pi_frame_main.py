@@ -180,7 +180,7 @@ class PhotoFrame:
             cwd=self.frontend_dir_path,
         )
 
-        qr_size = self.screen_height / 5
+        qr_size = self.screen_height / 4
 
         # Generate QR code with config frontend URL
         config_qr_data = f"http://{self.ip_address}:50002"
@@ -205,51 +205,46 @@ class PhotoFrame:
         center_x = self.screen_width // 2
 
         font = pygame.font.SysFont("Arial", 24)
-        subtitle_font = pygame.font.SysFont("Arial", 16)
+        subtitle_font = pygame.font.SysFont("Arial", 18)
 
         ## HostSpot Instructions (left side of screen)
         # Draw hotspot QR code
         hotspot_img_rect = self.hotspot_scaled_qr_img.get_rect(
-            center=(center_x // 2, self.screen_height // 2)
+            center=(center_x // 2, self.screen_height // 3)
         )
         self.screen.blit(self.hotspot_scaled_qr_img, hotspot_img_rect)
-        wifi_text = f"WiFi: {self.wifi_name}  Password: {self.wifi_password}"
 
         # Draw instructions for connecting to hotspot
-        step1_surface = font.render(
-            "First, connect your phone or computer to the frame's wifi network",
-            True,
-            (255, 255, 255),
+        self.render_text_list(
+            [
+                "First, connect your phone or",
+                "computer to the frame's wifi network",
+                f"ssid: {self.wifi_name}",
+                f"pw: {self.wifi_password}",
+            ],
+            center_x // 2,
+            hotspot_img_rect.bottom + 60,
+            font,
+            self.screen,
         )
-        step1_rect = step1_surface.get_rect(
-            center=(center_x // 2, hotspot_img_rect.bottom + 60)
-        )
-        self.screen.blit(step1_surface, step1_rect)
-
-        creds_surface = font.render(wifi_text, True, (255, 255, 255))
-        creds_rect = creds_surface.get_rect(
-            center=(center_x // 2, step1_rect.bottom + 40)
-        )
-        self.screen.blit(creds_surface, creds_rect)
-        creds_surface = font.render(wifi_text, True, (255, 255, 255))
-        self.screen.blit(creds_surface, creds_rect)
 
         ## Config Interface Instructions (right side of screen)
         # Draw config interface QR code
         config_img_rect = self.config_scaled_qr_img.get_rect(
-            center=(center_x + center_x // 2, self.screen_height // 2)
+            center=(center_x + center_x // 2, self.screen_height // 3)
         )
         self.screen.blit(self.config_scaled_qr_img, config_img_rect)
 
-        step2_surface = font.render(
-            "Then, scan the QR code above to access the configuration page",
-            True,
-            (255, 255, 255),
+        self.render_text_list(
+            [
+                "Then, scan the QR code above to",
+                "access the configuration page",
+            ],
+            center_x + center_x // 2,
+            config_img_rect.bottom + 60,
+            font,
+            self.screen,
         )
-        step2_rect = step2_surface.get_rect(
-            center=(center_x + center_x // 2, config_img_rect.bottom + 60)
-        )
-        self.screen.blit(step2_surface, step2_rect)
 
         step3_surface = subtitle_font.render(
             "Pressing the config button again will return the frame to display mode",
@@ -260,6 +255,27 @@ class PhotoFrame:
             center=(center_x, self.screen_height - (20 + step3_surface.get_height()))
         )
         self.screen.blit(step3_surface, step3_rect)
+
+        # Draw line down middle of screen
+        pygame.draw.line(
+            self.screen,
+            (100, 100, 100),
+            (center_x, 100),
+            (center_x, step3_rect.top - 60),
+            4,
+        )
+
+    def render_text_list(self, textList, locationX, locationY, font, screen):
+        offsetY = 0
+        for text in textList:
+            surface = font.render(
+                text,
+                True,
+                (255, 255, 255),
+            )
+            rect = surface.get_rect(center=(locationX, locationY + offsetY))
+            screen.blit(surface, rect)
+            offsetY += surface.get_height() + 10
 
     def render_display_screen(self, clock):
         # Check if it's time to change image
