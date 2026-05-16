@@ -44,13 +44,12 @@ def upload_image():
         # resize image before saving
         image = Image.open(file.stream)
         if image.width > 1920 or image.height > 1080:
-            image.thumbnail((1920, 1080))
-            img_byte_arr = io.BytesIO()
+            image.thumbnail(size=(1920, 1080), resample=Image.Resampling.LANCZOS)
             image.save(
                 os.path.join(app.config["UPLOAD_FOLDER"], filename), format=image.format
             )
-            img_byte_arr.seek(0)
-            file = img_byte_arr
+        else:
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         return jsonify({"status": "success"}), 200
 
 
