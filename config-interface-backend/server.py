@@ -4,7 +4,8 @@ from flask_cors import CORS
 import os
 import yaml
 from werkzeug.utils import secure_filename
-
+from PIL import Image
+import io
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/images"
@@ -40,7 +41,16 @@ def upload_image():
         return jsonify({"status": "error", "message": "No file selected"}), 400
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        # resize image before saving
+        image = Image.open(file.stream)
+        if image.width > 1920 or image.height > 1080:
+            image.thumbnail((1920, 1080))
+            img_byte_arr = io.BytesIO()
+            image.save(
+                os.path.join(app.config["UPLOAD_FOLDER"], filename), format=image.format
+            )
+            img_byte_arr.seek(0)
+            file = img_byte_arr
         return jsonify({"status": "success"}), 200
 
 
