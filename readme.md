@@ -87,14 +87,26 @@ Consists following components:
 
 ## To do
 
-- [X] Configuration interface
-- [X] Upload endpoint on server
+- [x] Configuration interface
+- [x] Upload endpoint on server
 - [ ] Image resizing before save
 - [ ] Custom startup screen (maybe the server will auto-set a random image as the splash screen when photos are added?)
 - [x] Autostart script upon boot
 - [ ] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
 ## Logs
+
+### 5/15/26
+
+I've created the first iteration of the enclosure in autodesk fusion. Originally I was going to make the frame (front at least) out of wood but I thought about it more and I just don't have the tools to make it well. 3D printing will be a more realiztic path towards getting this project wrapped up.
+
+Fusion is really cool. The workflow clicked pretty fast and the timeline feature is really forgiving.
+
+The first iteration surprisingly fit together perfectly but there were a couple reasons for a v2:
+
+1. The display wasn't being held in place and my idea of using the control board standoff/posts to brace the back of the display just didn't feel good. the v2 design builds in a brace on the back panel that will keep the display in place in a more straightforward way.
+2. A few of the holes needed some tweaks to their shape and the board support pillars needed to be a little wider to accomodate the likelyhood of the brass insert melting and mangling the cylinder.
+3. Chamfered all the things
 
 ### 4/2/26
 
@@ -107,6 +119,7 @@ Got the frame running on the pi zero 2.
 it worrrrrrrkkkssssss
 
 Some hurdles
+
 - the venv activate call within the install script doesn't work, needs to be in the start script instead.
 - when the start script runs, it shuts off the wifi, which is annoying because i'm ftp-ing to edit files so it needs reset every time
 - Found out that the debian network manager basically hard-codes the hotspot hosts ip address so that makes it easier to locate the config interface on the client
