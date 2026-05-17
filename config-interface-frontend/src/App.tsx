@@ -203,7 +203,7 @@ function App() {
             </S.InputGroupX>
             {colorTempOverride ? (
               <S.InputGroupX>
-                <span>{colorTemp}</span>
+                <span>{colorTemp}K</span>
                 <S.SliderInput
                   type="range"
                   min={1000}
