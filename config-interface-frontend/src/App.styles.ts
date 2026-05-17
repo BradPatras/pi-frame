@@ -72,8 +72,19 @@ export const Subtitle = styled.p`
   line-height: 1.4;
 `;
 
-export const InputGroup = styled.div`
+export const InputGroupX = styled.div`
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing.small};
+  flex: 0 0 auto;
+`;
+
+export const InputGroupY = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing.small};
   flex: 0 0 auto;
 `;
@@ -104,6 +115,31 @@ export const WideNumberInput = styled(NumberInput)`
   max-width: 400px;
   text-align: left;
   padding: 10px 15px;
+`;
+
+export const SliderInput = styled.input`
+  olor: ${({ theme }) => theme.colors.text};
+`;
+
+export const CheckboxInput = styled.input`
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  margin: 6px;
+  padding: 0;
+  appearance: none;
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.text};
+  outline: none;
+  transition: background-color 0.2s;
+
+  &:checked {
+    background-color: ${({ theme }) => theme.colors.primary};
+    border: 2px solid ${({ theme }) => theme.colors.background};
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export const Select = styled.select`
@@ -161,7 +197,7 @@ export const StyledUploadButton = styled.button`
   }
 `;
 
-export const ImagesSection = styled.div`
+export const Section = styled.div`
   margin-top: ${({ theme }) => theme.spacing.xlarge};
   padding: ${({ theme }) => theme.spacing.large};
   background-color: ${({ theme }) => theme.colors.cardBackground};

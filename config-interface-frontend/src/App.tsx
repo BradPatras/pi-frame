@@ -50,6 +50,7 @@ function UploadCompletionListener({
 function App() {
   const [refreshInterval, setRefreshInterval] = useState("8");
   const [timeUnit, setTimeUnit] = useState("hours");
+  const [colorTempOverride, setColorTempOverride] = useState(false);
   const [colorTemp, setColorTemp] = useState("");
   const [images, setImages] = useState<Image[]>([]);
 
@@ -158,7 +159,7 @@ function App() {
       <S.Content>
         <S.Label>
           <span>Refresh Interval:</span>
-          <S.InputGroup>
+          <S.InputGroupX>
             <S.NumberInput
               type="number"
               id="refreshInterval"
@@ -181,29 +182,47 @@ function App() {
               <option value="hours">hours</option>
               <option value="minutes">minutes</option>
             </S.Select>
-          </S.InputGroup>
+          </S.InputGroupX>
         </S.Label>
         <S.Label>
-          <span>Color Temperature (K):</span>
-          <S.InputGroup>
-            <S.WideNumberInput
-              type="number"
-              id="colorTemp"
-              name="colorTemp"
-              placeholder="1000 - 10,000"
-              value={colorTemp}
-              onChange={(e) => {
-                console.log("Color Temp changed to:", e.target.value);
-                setColorTemp(e.target.value);
-                updateConfig(refreshInterval, timeUnit, e.target.value);
-              }}
-            />
-          </S.InputGroup>
+          <S.InputGroupY>
+            <S.InputGroupX>
+              <span>Color Temperature Override:</span>
+              <S.CheckboxInput
+                type="checkbox"
+                id="colorOverride"
+                name="colorOverride"
+                checked={colorTempOverride}
+                onChange={(e) => {
+                  setColorTempOverride(e.target.checked);
+                  const newTemp = e.target.checked ? "5000" : "";
+                  setColorTemp(newTemp);
+                  updateConfig(refreshInterval, timeUnit, newTemp);
+                }}
+              />
+            </S.InputGroupX>
+            {colorTempOverride ? (
+              <S.InputGroupX>
+                <span>{colorTemp}</span>
+                <S.SliderInput
+                  type="range"
+                  min={1000}
+                  max={10000}
+                  id="colorTemp"
+                  name="colorTemp"
+                  value={colorTemp}
+                  onChange={(e) => {
+                    console.log("Color Temp changed to:", e.target.value);
+                    setColorTemp(e.target.value);
+                    updateConfig(refreshInterval, timeUnit, e.target.value);
+                  }}
+                />
+              </S.InputGroupX>
+            ) : null}
+          </S.InputGroupY>
         </S.Label>
-        <S.Subtitle>
-          Leave empty to use the display's default setting.
-        </S.Subtitle>
-        <S.ImagesSection>
+
+        <S.Section>
           <Uploady
             accept="image/jpeg,image/png,image/gif"
             destination={{ url: uploadUrl }}
@@ -239,7 +258,7 @@ function App() {
               </S.DeleteButton>
             </S.ImageListItem>
           ))}
-        </S.ImagesSection>
+        </S.Section>
       </S.Content>
     </S.AppContainer>
   );
