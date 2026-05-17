@@ -2,6 +2,10 @@ default:
     just --list
 
 [working-directory('config-interface-frontend')]
+dev-frontend:
+    npm run dev
+
+[working-directory('config-interface-frontend')]
 build-frontend:
     npm run build
 
