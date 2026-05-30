@@ -5,7 +5,7 @@ import time
 import os
 import glob
 import yaml
-from gpiozero import Button
+from gpiozero import Button, PWMOutputDevice
 from generate_qr import generate_qr_code
 import subprocess
 from image_utils import load_and_scale_image, adjust_image_temp
@@ -65,10 +65,20 @@ class PhotoFrame:
     def config_button_pressed_callback(self):
         self.config_button_pressed = True
 
+    def set_screen_brightness(self, value=1.0):
+        # value must be between 0 and 1
+        brightness = max(0, min(1.0, value))
+        self.screen_pwm.value = value
+
     def run(self):
         # Config button setup
         self.config_button = Button(16)
         self.config_button.when_pressed = self.config_button_pressed_callback
+
+        # Screen brightness wpm setup
+        self.screen_pwm = PWMOutputDevice(
+            12, active_high=False, initial_value=0.5, frequency=100
+        )
 
         # setup pygame
         pygame.init()

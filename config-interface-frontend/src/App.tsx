@@ -15,6 +15,12 @@ const UploadButton = asUploadButton((props: React.ComponentProps<"button">) => {
   return <S.StyledUploadButton {...props}>Upload Images</S.StyledUploadButton>;
 });
 
+const DEFAULT_COLOR_TEMP_OVERRIDE = "5000";
+const DEFAULT_NIGHT_MODE_START = "20";
+const DEFAULT_NIGHT_MODE_END = "7";
+const DEFAULT_REFRESH_INTERVAL = "8";
+const DEFAULT_REFRESH_UNIT = "hours";
+
 function UploadCompletionListener({
   baseUrl,
   setImages,
@@ -48,12 +54,18 @@ function UploadCompletionListener({
 }
 
 function App() {
-  const [refreshInterval, setRefreshInterval] = useState("8");
-  const [timeUnit, setTimeUnit] = useState("hours");
+  const [refreshInterval, setRefreshInterval] = useState(
+    DEFAULT_REFRESH_INTERVAL,
+  );
+  const [timeUnit, setTimeUnit] = useState(DEFAULT_REFRESH_UNIT);
   const [colorTempOverride, setColorTempOverride] = useState(false);
   const [colorTemp, setColorTemp] = useState("");
   const [images, setImages] = useState<Image[]>([]);
-
+  const [enableNightMode, setEnableNightMode] = useState(false);
+  const [nightModeStart, setNightModeStart] = useState(
+    DEFAULT_NIGHT_MODE_START,
+  );
+  const [nightModeEnd, setNightModeEnd] = useState(DEFAULT_NIGHT_MODE_END);
   // backend url is hosted on port 50001 of the same hostname as the frontend
   const baseUrl = `http://${window.location.hostname}:50001`;
   const uploadUrl = `${baseUrl}/api/upload`;
@@ -183,6 +195,20 @@ function App() {
               <option value="minutes">minutes</option>
             </S.Select>
           </S.InputGroupX>
+        </S.Label>
+        <S.Label>
+          <span>Night Mode:</span>
+          <S.CheckboxInput
+            type="checkbox"
+            id="nightMode"
+            name="nightMode"
+            checked={enableNightMode}
+            onChange={(e) => {
+              setEnableNightMode(e.target.checked);
+              setNightModeStart(DEFAULT_NIGHT_MODE_START);
+              setNightModeEnd(DEFAULT_NIGHT_MODE_END);
+            }}
+          />
         </S.Label>
         <S.Label>
           <S.InputGroupY>
