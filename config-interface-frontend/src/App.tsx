@@ -5,6 +5,9 @@ import Uploady, {
 } from "@rpldy/uploady";
 import { asUploadButton } from "@rpldy/upload-button";
 import * as S from "./App.styles";
+import "react-datetime-picker/dist/DateTimePicker.css";
+import "react-calendar/dist/Calendar.css";
+import "react-clock/dist/Clock.css";
 
 type Image = {
   name: string;
@@ -71,6 +74,7 @@ function App() {
   const uploadUrl = `${baseUrl}/api/upload`;
 
   const [isUploading, setIsLoading] = useState(false);
+  const [systemDate, setSystemDate] = useState<Date | null>(null);
 
   const updateConfig = (
     updates: Partial<{
@@ -134,6 +138,19 @@ function App() {
         console.error("Error deleting image:", error);
       });
   };
+
+  useEffect(() => {
+    fetch(`${baseUrl}/api/date`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.date) {
+          setSystemDate(new Date(data.date));
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching system date:", error);
+      });
+  }, []);
 
   useEffect(() => {
     console.log(`Fetching config from ${baseUrl}/api/config`);
@@ -251,6 +268,25 @@ function App() {
               </>
             ) : null}
           </S.InputGroupY>
+        </S.Label>
+        <S.Label>
+          <span>System date:</span>
+          <S.DatePicker
+            value={systemDate}
+            onChange={(value) => {
+              setSystemDate(value);
+              if (value) {
+                const iso = value.toISOString().slice(0, 19);
+                fetch(`${baseUrl}/api/date`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ date: iso }),
+                }).catch((error) => {
+                  console.error("Error updating system date:", error);
+                });
+              }
+            }}
+          />
         </S.Label>
         <S.Label>
           <S.InputGroupY>

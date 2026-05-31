@@ -1,3 +1,4 @@
+import DateTimePicker from "react-datetime-picker";
 import styled, { keyframes } from "styled-components";
 
 export const AppContainer = styled.div`
@@ -89,6 +90,18 @@ export const InputGroupY = styled.div`
   flex: 0 0 auto;
 `;
 
+export const DatePicker = styled(DateTimePicker)`
+  color: ${({ theme }) => theme.colors.text};
+
+  .react-datetime-picker__wrapper {
+    border: none;
+  }
+
+  .react-datetime-picker__button svg {
+    stroke: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
 export const NumberInput = styled.input`
   width: 5ch;
   padding: 10px 8px;
@@ -118,7 +131,7 @@ export const WideNumberInput = styled(NumberInput)`
 `;
 
 export const SliderInput = styled.input`
-  olor: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const CheckboxInput = styled.input`
