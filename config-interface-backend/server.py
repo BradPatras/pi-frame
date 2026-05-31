@@ -2,6 +2,7 @@
 from flask import Flask, flash, jsonify, redirect, send_from_directory, request
 from flask_cors import CORS
 import os
+import subprocess
 import yaml
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -109,6 +110,20 @@ def get_interval():
     else:
         interval_ms = 8 * 60 * 60 * 1000  # Default to 8 hours
     return jsonify({"delay": interval_ms})
+
+
+@app.route("/api/date", methods=["GET", "PUT"])
+def date():
+    # this func is heavily dependent on the server architecture being
+    # Raspberry Pi OS (debian linux, basically)
+    if request.method == "PUT":
+        date_iso = request.json.get("date", "")
+        if date_iso != "" and date_iso != None:
+            subprocess.call(["sudo", "date", "-s", date_iso])
+    else:
+        command = ["date", "+%Y-%m-%dT%H:%M:%S"]
+        result = subprocess.run(command, capture_output=True)
+        return jsonify({"date": result.stdout})
 
 
 @app.route("/api/config", methods=["GET", "PUT"])
