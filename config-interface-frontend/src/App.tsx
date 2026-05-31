@@ -218,6 +218,25 @@ function App() {
           </S.InputGroupX>
         </S.Label>
         <S.Label>
+          <span>System date:</span>
+          <S.DatePicker
+            value={systemDate}
+            onChange={(value) => {
+              setSystemDate(value);
+              if (value) {
+                const iso = value.toISOString().slice(0, 19);
+                fetch(`${baseUrl}/api/date`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ date: iso }),
+                }).catch((error) => {
+                  console.error("Error updating system date:", error);
+                });
+              }
+            }}
+          />
+        </S.Label>
+        <S.Label>
           <S.InputGroupY>
             <S.InputGroupX>
               <span>Night Mode:</span>
@@ -268,25 +287,6 @@ function App() {
               </>
             ) : null}
           </S.InputGroupY>
-        </S.Label>
-        <S.Label>
-          <span>System date:</span>
-          <S.DatePicker
-            value={systemDate}
-            onChange={(value) => {
-              setSystemDate(value);
-              if (value) {
-                const iso = value.toISOString().slice(0, 19);
-                fetch(`${baseUrl}/api/date`, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ date: iso }),
-                }).catch((error) => {
-                  console.error("Error updating system date:", error);
-                });
-              }
-            }}
-          />
         </S.Label>
         <S.Label>
           <S.InputGroupY>
