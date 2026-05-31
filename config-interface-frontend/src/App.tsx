@@ -73,26 +73,30 @@ function App() {
   const [isUploading, setIsLoading] = useState(false);
 
   const updateConfig = (
-    refreshInterval: string,
-    timeUnit: string,
-    colorTemp: string,
+    updates: Partial<{
+      refreshInterval: string;
+      timeUnit: string;
+      colorTemp: string;
+      nightModeStart: string;
+      nightModeEnd: string;
+    }> = {},
   ) => {
-    console.log("Updating config:", {
+    const config = {
       refreshInterval,
       timeUnit,
       colorTemp,
-    });
+      nightModeStart,
+      nightModeEnd,
+      ...updates,
+    };
+    console.log("Updating config:", config);
     // Update config via API
     fetch(`${baseUrl}/api/config`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        refreshInterval,
-        timeUnit,
-        colorTemp,
-      }),
+      body: JSON.stringify(config),
     })
       .then((response) => {
         if (!response.ok) {
@@ -179,7 +183,7 @@ function App() {
               value={refreshInterval}
               onChange={(e) => {
                 setRefreshInterval(e.target.value);
-                updateConfig(e.target.value, timeUnit, colorTemp);
+                updateConfig({ refreshInterval: e.target.value });
               }}
             />
             <S.Select
@@ -188,7 +192,7 @@ function App() {
               value={timeUnit}
               onChange={(e) => {
                 setTimeUnit(e.target.value);
-                updateConfig(refreshInterval, e.target.value, colorTemp);
+                updateConfig({ timeUnit: e.target.value });
               }}
             >
               <option value="hours">hours</option>
@@ -197,18 +201,56 @@ function App() {
           </S.InputGroupX>
         </S.Label>
         <S.Label>
-          <span>Night Mode:</span>
-          <S.CheckboxInput
-            type="checkbox"
-            id="nightMode"
-            name="nightMode"
-            checked={enableNightMode}
-            onChange={(e) => {
-              setEnableNightMode(e.target.checked);
-              setNightModeStart(DEFAULT_NIGHT_MODE_START);
-              setNightModeEnd(DEFAULT_NIGHT_MODE_END);
-            }}
-          />
+          <S.InputGroupY>
+            <S.InputGroupX>
+              <span>Night Mode:</span>
+              <S.CheckboxInput
+                type="checkbox"
+                id="nightMode"
+                name="nightMode"
+                checked={enableNightMode}
+                onChange={(e) => {
+                  setEnableNightMode(e.target.checked);
+                  setNightModeStart(
+                    e.target.checked ? DEFAULT_NIGHT_MODE_START : "",
+                  );
+                  setNightModeEnd(
+                    e.target.checked ? DEFAULT_NIGHT_MODE_END : "",
+                  );
+                }}
+              />
+            </S.InputGroupX>
+            {enableNightMode ? (
+              <>
+                <S.InputGroupX>
+                  <span>Night mode start (hour, 0-23):</span>
+                  <S.NumberInput
+                    type="number"
+                    id="nightStart"
+                    name="nightStart"
+                    value={nightModeStart}
+                    onChange={(e) => {
+                      setNightModeStart(e.target.value);
+                      updateConfig({ nightModeStart: e.target.value });
+                    }}
+                  />
+                </S.InputGroupX>
+                <S.InputGroupX>
+                  <span>Night mode end (hour, 0-23):</span>
+                  <S.NumberInput
+                    type="number"
+                    id="nightEnd"
+                    name="nightEnd"
+                    value={nightModeEnd}
+                    onChange={(e) => {
+                      setNightModeEnd(e.target.value);
+                      updateConfig({ nightModeEnd: e.target.value });
+                    }}
+                  />
+                </S.InputGroupX>
+              </>
+            ) : null}
+          </S.InputGroupY>
         </S.Label>
         <S.Label>
           <S.InputGroupY>
@@ -221,9 +263,11 @@ function App() {
                 checked={colorTempOverride}
                 onChange={(e) => {
                   setColorTempOverride(e.target.checked);
-                  const newTemp = e.target.checked ? "5000" : "";
+                  const newTemp = e.target.checked
+                    ? DEFAULT_COLOR_TEMP_OVERRIDE
+                    : "";
                   setColorTemp(newTemp);
-                  updateConfig(refreshInterval, timeUnit, newTemp);
+                  updateConfig({ colorTemp: newTemp });
                 }}
               />
             </S.InputGroupX>
@@ -240,7 +284,7 @@ function App() {
                   onChange={(e) => {
                     console.log("Color Temp changed to:", e.target.value);
                     setColorTemp(e.target.value);
-                    updateConfig(refreshInterval, timeUnit, e.target.value);
+                    updateConfig({ colorTemp: e.target.value });
                   }}
                 />
               </S.InputGroupX>

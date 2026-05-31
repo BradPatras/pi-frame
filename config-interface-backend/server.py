@@ -124,6 +124,8 @@ def config():
         config_data["image_interval"] = int(data.get("refreshInterval", 8))
         config_data["image_interval_unit"] = data.get("timeUnit", "hours")
         config_data["color_temperature"] = data.get("colorTemp", "")
+        config_data["night_start"] = data.get("nightModeStart", "")
+        config_data["night_end"] = data.get("nightModeEnd", "")
         with open(config_path, "w") as f:
             yaml.safe_dump(config_data, f)
         return jsonify({"status": "success"})
@@ -135,6 +137,8 @@ def config():
                 config_data["timeUnit"] = str(
                     config.get("image_interval_unit", "hours")
                 )
+                config_data["night_start"] = str(config.get("night_start", ""))
+                config_data["night_end"] = str(config.get("night_end", ""))
                 config_data["colorTemp"] = str(config.get("color_temperature", ""))
         else:
             config_data = {"refreshInterval": "8", "timeUnit": "hours", "colorTemp": ""}

@@ -5,6 +5,7 @@ import time
 import os
 import glob
 import yaml
+import datetime
 from gpiozero import Button, PWMOutputDevice
 from generate_qr import generate_qr_code
 import subprocess
@@ -118,6 +119,8 @@ class PhotoFrame:
                     self.is_config_mode = True
                 self.config_button_pressed = False
 
+            self.update_display_brightness()
+
             if self.is_config_mode:
                 self.render_config_screen()
             else:
@@ -138,6 +141,22 @@ class PhotoFrame:
             self.backend_process.kill()
         if self.frontend_process is not None:
             self.frontend_process.kill()
+
+    def update_display_brightness(self):
+        night_start = self.get_night_mode_start()
+        night_end = self.get_night_mode_end()
+        if night_start == None or night_end == None:
+            # nightmode not setup, default to full brightness
+            self.screen_pwm.value = 1.0
+            return
+
+        # only bothering with the typical case of start in the
+        # evening and end in the morning
+        current_hour = datetime.datetime.now().hour
+        if current_hour not in range(night_end, night_start):
+            self.screen_pwm.value = 0.0
+        else:
+            self.screen_pwm.value = 1.0
 
     def setup_photo_display(self):
         print(f"Script directory: {self.script_dir}")
@@ -319,29 +338,60 @@ class PhotoFrame:
         return image
 
     def get_interval_seconds(self):
+        configs = self.get_configs()
+        if configs == None:
+            print("pi_frame_main.getIntervalSeconds: Failed to parse configs")
+            return 2 * 60 * 60  # Default to 2 hours in seconds
+
+        interval = configs.get("image_interval", 2)
+        if interval == None:
+            interval = 2
+
+        interval_unit = configs.get("image_interval_unit", "hours")
+        if interval_unit == "minutes":
+            return interval * 60
+        else:  # assume hours
+            return interval * 60 * 60
+
+    def get_night_mode_start(self):
+        configs = self.get_configs()
+        start = configs.get("night_start", None)
+        if start == "":
+            return None
+
+        try:
+            start_int = int(start)
+            return max(0, min(start_int, 23))
+        except:
+            print("pi_frame_main.get_night_mode_start failed to parse")
+            return None
+
+    def get_night_mode_end(self):
+        configs = self.get_configs()
+        end = configs.get("night_end", None)
+        if end == "":
+            return None
+
+        try:
+            end_int = int(end)
+            return max(0, min(end_int, 23))
+        except:
+            print("pi_frame_main.get_night_mode_start failed to parse")
+
+    def get_configs(self):
         if os.path.exists(self.config_path):
             try:
                 with open(self.config_path, "r") as f:
-                    config = yaml.safe_load(f)
-                    interval = config.get("image_interval", 2)
-                    interval_unit = config.get("image_interval_unit", "hours")
-                    if interval_unit == "minutes":
-                        return interval * 60
-                    else:  # assume hours
-                        return interval * 60 * 60
-            except OSError:
-                return 2 * 60 * 60  # Default to 2 hours in seconds
+                    return yaml.safe_load(f)
+            except:
+                print("pi_frame_main: Failed to parse config")
+                return None
 
     def get_color_adjustment(self):
         adjustment = None
-        if not os.path.exists(self.config_path):
-            return None
-        try:
-            with open(self.config_path, "r") as f:
-                config = yaml.safe_load(f)
-                adjustment = config.get("color_temperature", None)
-        except OSError:
-            return None
+        configs = self.get_configs()
+        if configs != None:
+            adjustment = configs.get("color_temperature", None)
 
         try:
             adjustment = int(adjustment)
