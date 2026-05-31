@@ -96,6 +96,14 @@ Consists following components:
 
 ## Logs
 
+### 5/30/26
+
+I've test fit the v2 enclosure and it seems to fit basically perfectly 👏 .
+I worked out how the display's brightness control works and added the night mode feature to the display. I haven't tested that on the hardware yet though.
+The jumpers i'm using for the brightness control on the display driver board are too tall to fit with the back plate on so i can't get away with just using jumpers to wire things up (probably for the best).
+
+I realized since this pi won't have a network connection, it can't set it's own time (an issue for night mode since it's time-based). I'll have to add a time setting to the configurator screen 🥲
+
 ### 5/15/26
 
 I've created the first iteration of the enclosure in autodesk fusion. Originally I was going to make the frame (front at least) out of wood but I thought about it more and I just don't have the tools to make it well. 3D printing will be a more realiztic path towards getting this project wrapped up.
