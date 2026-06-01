@@ -44,14 +44,16 @@ def upload_image():
         filename = secure_filename(file.filename)
         # resize image before saving
         image = Image.open(file.stream)
-        max_width = 1024
-        max_height = 600
+        max_width = 2048
+        max_height = 1200
         if image.width > max_width or image.height > max_height:
             image.thumbnail(
                 size=(max_width, max_height), resample=Image.Resampling.LANCZOS
             )
             image.save(
-                os.path.join(app.config["UPLOAD_FOLDER"], filename), format=image.format
+                os.path.join(app.config["UPLOAD_FOLDER"], filename),
+                format="jpeg",
+                quality=100,
             )
         else:
             file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))

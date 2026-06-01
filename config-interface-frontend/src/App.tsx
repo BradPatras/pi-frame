@@ -94,7 +94,6 @@ function App() {
       ...updates,
     };
     console.log("Updating config:", config);
-    // Update config via API
     fetch(`${baseUrl}/api/config`, {
       method: "PUT",
       headers: {
@@ -154,7 +153,6 @@ function App() {
 
   useEffect(() => {
     console.log(`Fetching config from ${baseUrl}/api/config`);
-    // Fetch config from API
     fetch(`${baseUrl}/api/config`)
       .then((response) => response.json())
       .then((data) => {
@@ -218,7 +216,7 @@ function App() {
           </S.InputGroupX>
         </S.Label>
         <S.Label>
-          <span>System date:</span>
+          <span>System Date:</span>
           <S.DatePicker
             value={systemDate}
             onChange={(value) => {
