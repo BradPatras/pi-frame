@@ -5,9 +5,6 @@ import Uploady, {
 } from "@rpldy/uploady";
 import { asUploadButton } from "@rpldy/upload-button";
 import * as S from "./App.styles";
-import "react-datetime-picker/dist/DateTimePicker.css";
-import "react-calendar/dist/Calendar.css";
-import "react-clock/dist/Clock.css";
 
 type Image = {
   name: string;
@@ -74,7 +71,6 @@ function App() {
   const uploadUrl = `${baseUrl}/api/upload`;
 
   const [isUploading, setIsLoading] = useState(false);
-  const [systemDate, setSystemDate] = useState<Date | null>(null);
 
   const updateConfig = (
     updates: Partial<{
@@ -139,16 +135,22 @@ function App() {
   };
 
   useEffect(() => {
-    fetch(`${baseUrl}/api/date`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.date) {
-          setSystemDate(new Date(data.date));
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching system date:", error);
-      });
+    // wow thanks Sweden! https://stackoverflow.com/a/65758103/4038809
+    const localDateString = new Date()
+      .toLocaleString("sv")
+      .replace(" ", "T")
+      .split(".")[0];
+
+    // The frame doesn't have a RTC so it needs some help keeping track
+    // of the date and time. When client loads this screen it'll
+    // send the date/time to the frame for it to update it's clock with.
+    fetch(`${baseUrl}/api/date`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date: localDateString }),
+    }).catch((error) => {
+      console.error("Error updating system date:", error);
+    });
   }, []);
 
   useEffect(() => {
@@ -214,25 +216,6 @@ function App() {
               <option value="minutes">minutes</option>
             </S.Select>
           </S.InputGroupX>
-        </S.Label>
-        <S.Label>
-          <span>System Date:</span>
-          <S.DatePicker
-            value={systemDate}
-            onChange={(value) => {
-              setSystemDate(value);
-              if (value) {
-                const iso = value.toISOString().slice(0, 19);
-                fetch(`${baseUrl}/api/date`, {
-                  method: "PUT",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ date: iso }),
-                }).catch((error) => {
-                  console.error("Error updating system date:", error);
-                });
-              }
-            }}
-          />
         </S.Label>
         <S.Label>
           <S.InputGroupY>

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-from flask import Flask, flash, jsonify, redirect, send_from_directory, request
+from flask import Flask, flash, jsonify, send_from_directory, request
 from flask_cors import CORS
+from datetime import datetime
 import os
 import subprocess
 import yaml
 from werkzeug.utils import secure_filename
 from PIL import Image
-import io
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "static/images"
@@ -114,18 +114,13 @@ def get_interval():
     return jsonify({"delay": interval_ms})
 
 
-@app.route("/api/date", methods=["GET", "PUT"])
+@app.route("/api/date", methods=["PUT"])
 def date():
     # this func is heavily dependent on the server architecture being
     # Raspberry Pi OS (debian linux, basically)
-    if request.method == "PUT":
-        date_iso = request.json.get("date", "")
-        if date_iso != "" and date_iso != None:
-            subprocess.call(["sudo", "date", "-s", date_iso])
-    else:
-        command = ["date", "+%Y-%m-%dT%H:%M:%S"]
-        result = subprocess.run(command, capture_output=True)
-        return jsonify({"date": result.stdout})
+    date_iso = request.json.get("date", "")
+    if date_iso != "" and date_iso != None:
+        subprocess.call(["sudo", "date", "-s", date_iso])
 
 
 @app.route("/api/config", methods=["GET", "PUT"])

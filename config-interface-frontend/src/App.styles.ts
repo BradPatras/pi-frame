@@ -1,4 +1,3 @@
-import DateTimePicker from "react-datetime-picker";
 import styled, { keyframes } from "styled-components";
 
 export const AppContainer = styled.div`
@@ -88,18 +87,6 @@ export const InputGroupY = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.small};
   flex: 0 0 auto;
-`;
-
-export const DatePicker = styled(DateTimePicker)`
-  color: ${({ theme }) => theme.colors.text};
-
-  .react-datetime-picker__wrapper {
-    border: none;
-  }
-
-  .react-datetime-picker__button svg {
-    stroke: ${({ theme }) => theme.colors.primary};
-  }
 `;
 
 export const NumberInput = styled.input`
