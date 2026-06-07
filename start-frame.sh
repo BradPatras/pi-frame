@@ -12,4 +12,4 @@
 # Start the photo display script
 source /home/bread/frame/.venv/bin/activate
 
-startx /home/bread/frame/.venv/bin/python /home/bread/frame/frame-interface/pi_frame_main.py
+startx /home/bread/frame/.venv/bin/python /home/bread/frame/frame-core/pi_frame_main.py

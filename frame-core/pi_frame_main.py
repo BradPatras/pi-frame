@@ -35,16 +35,16 @@ class PhotoFrame:
         # Paths
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
         self.config_path = os.path.join(
-            self.script_dir, "../", "config-interface-backend", "static", "config.yml"
+            self.script_dir, "../", "frame-config-backend", "static", "config.yml"
         )
         self.images_path = os.path.join(
-            self.script_dir, "../", "config-interface-backend", "static", "images"
+            self.script_dir, "../", "frame-config-backend", "static", "images"
         )
         self.frontend_dir_path = os.path.join(
-            self.script_dir, "../", "config-interface-frontend"
+            self.script_dir, "../", "frame-config-frontend"
         )
         self.backend_dir_path = os.path.join(
-            self.script_dir, "../", "config-interface-backend"
+            self.script_dir, "../", "frame-config-backend"
         )
 
         # Mode state

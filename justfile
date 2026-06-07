@@ -1,19 +1,19 @@
 default:
     just --list
 
-[working-directory('config-interface-frontend')]
+[working-directory('frame-config-frontend')]
 dev-frontend:
     npm run dev
 
-[working-directory('config-interface-frontend')]
+[working-directory('frame-config-frontend')]
 build-frontend:
     npm run build
 
-[working-directory('config-interface-frontend')]
+[working-directory('frame-config-frontend')]
 start-frontend: build-frontend
     python -m http.server 50002 --directory dist
 
-[working-directory('config-interface-backend')]
+[working-directory('frame-config-backend')]
 start-backend:
     gunicorn -w 2 -b 0.0.0.0:50001 server:app
 
@@ -25,16 +25,16 @@ build-frame: build-frontend
     mkdir dist/
     mkdir dist/frame
 
-    mkdir dist/frame/config-interface-backend
-    cp -R config-interface-backend/ dist/frame/config-interface-backend/
-    rm -rf dist/frame/config-interface-backend/__pycache__
+    mkdir dist/frame/frame-config-backend
+    cp -R frame-config-backend/ dist/frame/frame-config-backend/
+    rm -rf dist/frame/frame-config-backend/__pycache__
 
-    mkdir dist/frame/config-interface-frontend
-    cp -R config-interface-frontend/dist/ dist/frame/config-interface-frontend/
+    mkdir dist/frame/frame-config-frontend
+    cp -R frame-config-frontend/dist/ dist/frame/frame-config-frontend/
 
-    mkdir dist/frame/frame-interface
-    cp -R frame-interface/ dist/frame/frame-interface/
-    rm -rf dist/frame/frame-interface/__pycache__
+    mkdir dist/frame/frame-core
+    cp -R frame-core/ dist/frame/frame-core/
+    rm -rf dist/frame/frame-core/__pycache__
 
     cp install.sh dist/frame/
     cp photo-display.service dist/frame/

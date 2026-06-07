@@ -59,7 +59,7 @@ This interface occupies the whole frame display and shows the images one by one,
 
 This interface is completely local to the pi.
 
-**implementation**: [`frame-interface/photo_display.py`](frame-interface/photo_display.py)
+**implementation**: [`frame-core/photo_display.py`](frame-core/photo_display.py)
 
 #### Configuration portal (on frame)
 
@@ -68,7 +68,7 @@ This interface is shown when the frame's physical config button is pressed and c
 - The frame's wifi network name/password
 - The configuration interface web address (could be served up as a QR code alongside the actual address)
 
-**implementation**: [`frame-interface/display_config.py`](frame-interface/display_config.py)
+**implementation**: [`frame-core/display_config.py`](frame-core/display_config.py)
 
 #### Configuration interface (on user device)
 
@@ -81,9 +81,9 @@ Consists following components:
   - Each photo should show a small thumbnail, the title, and a trash icon to remove it
 - An "Add Photos" button
 
-**Backend implementation**: [`config-interface-backend/server.py`](config-interface-backend/server.py)
+**Backend implementation**: [`frame-config-backend/server.py`](frame-config-backend/server.py)
 
-**Frontend implementation**: [`config-interface-frontend/`](config-interface-frontend/)
+**Frontend implementation**: [`frame-config-frontend/`](frame-config-frontend/)
 
 ## To do
 
