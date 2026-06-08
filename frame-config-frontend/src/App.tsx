@@ -295,6 +295,7 @@ function App() {
                   type="range"
                   min={1000}
                   max={10000}
+                  step={500}
                   id="colorTemp"
                   name="colorTemp"
                   value={colorTemp}

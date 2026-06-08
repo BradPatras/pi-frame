@@ -8,6 +8,7 @@ import yaml
 import datetime
 from gpiozero import Button, PWMOutputDevice
 from generate_qr import generate_qr_code
+from log import log
 import subprocess
 from image_utils import load_and_scale_image, adjust_image_temp
 from network import enable_wifi_hotspot, disable_wifi_hotspot
@@ -71,30 +72,33 @@ class PhotoFrame:
         brightness = max(0, min(1.0, value))
         self.screen_pwm.value = value
 
-    def run(self):
+    def setup_gpio(self):
         # Config button setup
         self.config_button = Button(16)
         self.config_button.when_pressed = self.config_button_pressed_callback
 
-        # Screen brightness wpm setup
+        # Screen brightness pwm setup
         self.screen_pwm = PWMOutputDevice(
-            12, active_high=False, initial_value=0.5, frequency=100
+            12, active_high=False, initial_value=1, frequency=100
         )
+
+    def run(self):
+        self.setup_gpio()
 
         # setup pygame
         pygame.init()
         clock = pygame.time.Clock()
 
         # Set up fullscreen display
-        print("Setting up display...")
+        log("Setting up display...")
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen_width, self.screen_height = self.screen.get_size()
-        print(f"Screen size: {self.screen_width}x{self.screen_height}")
+        log(f"Screen size: {self.screen_width}x{self.screen_height}")
         pygame.display.set_caption("Photo Display")
 
         # Hide mouse cursor
         pygame.mouse.set_visible(False)
-        print("Display setup complete")
+        log("Display setup complete")
 
         # Initialize photo display
         self.setup_photo_display()
@@ -159,14 +163,14 @@ class PhotoFrame:
             self.screen_pwm.value = 1.0
 
     def setup_photo_display(self):
-        print(f"Script directory: {self.script_dir}")
+        log(f"Script directory: {self.script_dir}")
 
         # Stop local wifi hotspot
         disable_wifi_hotspot()
         self.stopServers()
 
         # Get image files
-        print(f"Looking for images in: {self.images_path}")
+        log(f"Looking for images in: {self.images_path}")
         image_extensions = ["*.jpg", "*.jpeg", "*.png", "*.bmp"]
         self.image_files = []
 
@@ -178,15 +182,15 @@ class PhotoFrame:
 
         # If no images found, swap trigger config mode and return early
         if not self.image_files:
-            print(f"No images found in {self.images_path}")
+            log(f"No images found in {self.images_path}")
             self.config_button_pressed = True
             return
 
-        print(f"Found {len(self.image_files)} images")
+        log(f"Found {len(self.image_files)} images")
 
         # Shuffle images initially
         random.shuffle(self.image_files)
-        print("Images shuffled")
+        log("Images shuffled")
 
         # Reset display state
         self.image_index = 0
@@ -340,7 +344,7 @@ class PhotoFrame:
     def get_interval_seconds(self):
         configs = self.get_configs()
         if configs == None:
-            print("pi_frame_main.getIntervalSeconds: Failed to parse configs")
+            log("pi_frame_main.getIntervalSeconds: Failed to parse configs")
             return 2 * 60 * 60  # Default to 2 hours in seconds
 
         interval = configs.get("image_interval", 2)
@@ -363,7 +367,7 @@ class PhotoFrame:
             start_int = int(start)
             return max(0, min(start_int, 23))
         except:
-            print("pi_frame_main.get_night_mode_start failed to parse")
+            log("pi_frame_main.get_night_mode_start failed to parse")
             return None
 
     def get_night_mode_end(self):
@@ -376,7 +380,7 @@ class PhotoFrame:
             end_int = int(end)
             return max(0, min(end_int, 23))
         except:
-            print("pi_frame_main.get_night_mode_start failed to parse")
+            log("pi_frame_main.get_night_mode_start failed to parse")
 
     def get_configs(self):
         if os.path.exists(self.config_path):
@@ -384,7 +388,7 @@ class PhotoFrame:
                 with open(self.config_path, "r") as f:
                     return yaml.safe_load(f)
             except:
-                print("pi_frame_main: Failed to parse config")
+                log("pi_frame_main: Failed to parse config")
                 return None
 
     def get_color_adjustment(self):

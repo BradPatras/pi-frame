@@ -11,7 +11,7 @@ build-frontend:
 
 [working-directory('frame-config-frontend')]
 start-frontend: build-frontend
-    python -m http.server 50002 --directory dist
+    npm run dev -- --port 50002
 
 [working-directory('frame-config-backend')]
 start-backend:
