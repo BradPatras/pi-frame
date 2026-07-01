@@ -14,16 +14,16 @@ This is how I imagine the user adding photos:
    - This will put the frame into "configuration mode"
 2. The frame will start up it's own wifi network and the screen show the wifi network name/password, "PI-FRAME", "SOME PASSWORD"
 3. A QR code will appear on the frame's screen that will link to a web-page being locally hosted by the frame. This webpage will let the user manage the photos on the frame.
-4. After the frame's wifi network has no connections for a certain time period, it will disable the wifi network, returning to its simple image displaying-mode. (Pressing the config button again will also return to picture mode)
+4. Pressing the config button again will return the frame to photo display mode
 
 ## Hardware
 
-### Board
+#### Board
 
 - Raspberry pi zero w
   - I could definitely get away with using a microcontroller instead of an SBC but I'm mostly worried about the web server/image uploading step and I know a rpi will have the power to do it.
 
-### Display
+#### Display
 
 Could go with gpio pased display or hdmi.
 (hdmi seems simpler since raspberry pi has the port)
@@ -39,19 +39,7 @@ Could go with gpio pased display or hdmi.
   - 7 inch hdmi-based (via converter board) ips: https://www.waveshare.com/70h-1024600.htm?sku=22672
     - $33.99 with (converter board included)
 
-## Dev notes
-
-[Headless pi with display output](https://raspberrypi.stackexchange.com/questions/99096/sending-from-headless-raspi-to-hdmi-screen)
-[Installing basics required to push stuff to a display without a desktop environment](https://raspberrypi.stackexchange.com/a/66594)
-
-using a python flask app for the backend. This should make it easy to interface with the PI's gpio for the button presses.
-To start the local server, run:
-
-```sh
-gunicorn -w 2 -b 0.0.0.0:8000 server:app
-```
-
-### Main components
+## Software
 
 #### Photo display interface (on frame)
 
@@ -59,7 +47,7 @@ This interface occupies the whole frame display and shows the images one by one,
 
 This interface is completely local to the pi.
 
-**implementation**: [`frame-core/photo_display.py`](frame-core/photo_display.py)
+**implementation**: [`frame-core/pi_frame_main.py:render_display_screen()`](frame-core/pi_frame_main.py)
 
 #### Configuration portal (on frame)
 
@@ -68,7 +56,7 @@ This interface is shown when the frame's physical config button is pressed and c
 - The frame's wifi network name/password
 - The configuration interface web address (could be served up as a QR code alongside the actual address)
 
-**implementation**: [`frame-core/display_config.py`](frame-core/display_config.py)
+**implementation**: [`frame-core/pi_frame_main.py:render_config_screen()`](frame-core/pi_frame_main.py)
 
 #### Configuration interface (on user device)
 
@@ -77,24 +65,48 @@ This interface is broadcast on the frame's local wifi network and allows modifyi
 Consists following components:
 
 - Inverval adjustment (integer input and dropdown for minutes/hours)
+- Night mode setting (set when the display dims)
 - List of photos currently on-device
   - Each photo should show a small thumbnail, the title, and a trash icon to remove it
 - An "Add Photos" button
 
 **Backend implementation**: [`frame-config-backend/server.py`](frame-config-backend/server.py)
 
-**Frontend implementation**: [`frame-config-frontend/`](frame-config-frontend/)
+**Frontend implementation**: [`frame-config-frontend/src/App.tsx`](frame-config-frontend/src/App.tsx)
 
 ## To do
 
 - [x] Configuration interface
 - [x] Upload endpoint on server
-- [ ] Image resizing before save
-- [ ] Custom startup screen (maybe the server will auto-set a random image as the splash screen when photos are added?)
+- [x] Image resizing before save
 - [x] Autostart script upon boot
-- [ ] Switch back to headless mode (use openbox?) - full os in cmd line mode
 
-## Logs
+not gonna do
+
+- [ ] Custom startup screen (maybe the server will auto-set a random image as the splash screen when photos are added?)
+- [ ] Switch back to headless mode (use openbox?) - full os in cmd line mode
+- [ ] captive portal so that the config page opens immediately when wifi connects (this just seems like a pain to set up)
+
+## Dev logs
+
+### 6/30/26 - Reflections
+
+- I shoulda used an oled display, the black bars of cropped photos on the LCD look pretty bad
+- The biggest flaw is that, since you have to connect to it's wifi hotspot to add photos, you can't access your cloud-based photos. So you have to choose what photos you want to add, download them, then connect to the frame and upload them
+- The night mode works but the setting defaults to off every time you open the configurator
+- I don't think the color temp adjustment works
+- Uploading is a little slow, I should have implemented per-image upload % so it doesn't look like it's spinning forever
+
+If I were to do a v2...
+
+- oled screen ($$)
+- a header-less raspberry pi
+  - this would allow for a much slimmer enclosure
+- different button (maybe like a flat-style one)
+
+### 6/28/26
+
+I'm callin it, it's done. Decided not to paint it because I just wanna move on and not let it linger on any longer. I ended up with a v3 of the enclosure because I accidentially melted the edge of the previous one and the positioning of the display board made the display cable connection a bit of a stretch.
 
 ### 5/30/26
 
@@ -106,7 +118,7 @@ I realized since this pi won't have a network connection, it can't set it's own 
 
 ### 5/15/26
 
-I've created the first iteration of the enclosure in autodesk fusion. Originally I was going to make the frame (front at least) out of wood but I thought about it more and I just don't have the tools to make it well. 3D printing will be a more realiztic path towards getting this project wrapped up.
+I've created the first iteration of the enclosure in autodesk fusion. Originally I was going to make the frame (front at least) out of wood but I thought about it more and I just don't have the tools to make it well. 3D printing will be a more realistic path towards getting this project wrapped up.
 
 Fusion is really cool. The workflow clicked pretty fast and the timeline feature is really forgiving.
 
@@ -162,7 +174,7 @@ I haven't tried out the suggestions in that thread though.
 ### 2/9/26
 
 I added an install script because I want to wipe the rpi to start fresh on bookworm instead of trixie (to see if that fixes the hotspot issue).
-I realized having the npm build step happen as part of the frame's run script is a terrible idea beacuse that'd mean i'd need to have node and npm installed on the pi and that's a pretty bug lift for that little guy.
+I realized having the npm build step happen as part of the frame's run script is a terrible idea beacuse that'd mean i'd need to have node and npm installed on the pi and that's a pretty big lift for that little guy.
 
 So the plan is to prebuild the react app before pushing it to the pi, then just use a simple python server to host it on the pi's local network.
 
